@@ -96,59 +96,59 @@ mongoose.connection.on('error', (err) => {
 var rule = new schedule.RecurrenceRule();
 rule.hour = 4;
 rule.minute = 55;
- 
+
 var j = schedule.scheduleJob(rule, function(){
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   console.log('@@@@@@######@@@@@@@@Sending Mail to All ACTIVE USERS!!!!!');
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   userController.mailAllActiveUsers();
-}); 
+});
 
 
 /****
-**CRON JOBS 
+**CRON JOBS
 **Check if users are still active 12 and 20
 */
 var rule1 = new schedule.RecurrenceRule();
 rule1.hour = 4;
 rule1.minute = 30;
- 
+
 var j = schedule.scheduleJob(rule1, function(){
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   console.log('@@@@@@######@@@@@@@@Checking if Users are active!!!!!');
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   userController.stillActive();
-}); 
+});
 
 /****
-**CRON JOBS 
+**CRON JOBS
 **Check if users are still active 12 and 20
 */
 var rule2 = new schedule.RecurrenceRule();
 rule2.hour = 12;
 rule2.minute = 30;
- 
+
 var j2 = schedule.scheduleJob(rule2, function(){
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   console.log('@@@@@@######@@@@@@@@2222 Checking if Users are active 2222!!!!!');
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   userController.stillActive();
-}); 
+});
 
 /****
-**CRON JOBS 
+**CRON JOBS
 **Check if users are still active 12 and 20
 */
 var rule3 = new schedule.RecurrenceRule();
 rule3.hour = 20;
 rule3.minute = 30;
- 
+
 var j3 = schedule.scheduleJob(rule3, function(){
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   console.log('@@@@@@######@@@@@@@@3333 Checking if Users are active 3333!!!!!');
   console.log('@@@@@@######@@@@@@@@#########@@@@@@@@@@@@########');
   userController.stillActive();
-}); 
+});
 
 
 /**
@@ -267,6 +267,13 @@ app.get('/com', function (req, res) {
   });
 });
 
+app.get('/policy', function (req, res) {
+  res.render('policy', {
+    title: 'Our Policy'
+  });
+});
+
+
 app.get('/info', passportConfig.isAuthenticated, function (req, res) {
   res.render('info', {
     title: 'User Docs'
@@ -290,14 +297,6 @@ app.get('/notifications', passportConfig.isAuthenticated, notificationController
 app.get('/test_comment', function (req, res) {
   res.render('test', {
     title: 'Test Comments'
-  });
-});
-
-app.get('/pri', function (req, res) {
-  console.log("@@@@@query    ",req.query.c);
-  res.render('pri', {
-    title: 'Test Privacy',
-    condis: req.query.c
   });
 });
 
@@ -330,7 +329,8 @@ app.get('/feed', passportConfig.isAuthenticated, scriptController.getScript);
 app.post('/feed', passportConfig.isAuthenticated, scriptController.postUpdateFeedAction);
 app.post('/pro_feed', passportConfig.isAuthenticated, scriptController.postUpdateProFeedAction);
 app.post('/userPost_feed', passportConfig.isAuthenticated, scriptController.postUpdateUserPostFeedAction);
-
+app.post('/view_policy', passportConfig.isAuthenticated, userController.postViewPolicy);
+app.post('/view_policy_viewtime', passportConfig.isAuthenticated, userController.postViewPolicyViewTime);
 /**
  * Error Handler.
  */

@@ -7,9 +7,12 @@ block content
   .computer.only.tablet.only.four.wide.column 
     .ui.card
       .image
-        img(src='/user_post/'+user.profile.picture)
+        if user.profile.picture
+          img(src='/user_post/'+user.profile.picture)
+        else
+          img(src=user.gravatar(60))
       .content
-        a.header(href='/me')= user.profile.name || user.email || user.id
+        a.header(href='/me')= user.profile.name || user.username || user.id
         .meta="@"+user.username
         .description=user.profile.bio
         .description
@@ -38,10 +41,9 @@ block content
                     each actor in best
                       if actor.username != "generic-joe"
                         a.ui.avatar.image(href='/user/'+actor.username, data-tooltip=actor.profile.name, data-position='top center')
-                          if actor[profileFilter] == "yes"
-                            img.ui.avatar.image(src='/profile_pictures/'+actor.profile.picture)
-                          else
-                            img.ui.avatar.image(src=actor.profile.fakepic)
+                          //-img(src='/profile_pictures/'+actor.profile.picture)
+                          
+                          img.ui.avatar.image(src='/profile_pictures/'+actor.profile.picture)
                   if best.length == 1
                     .summary
                       a(href='/user/'+best[0].username)=best[0].profile.name
@@ -230,6 +232,4 @@ block content
                     |  has commented on your post.
                   .extra.text=val.replyBody
                   
-            default
-        
-              
+            //-default

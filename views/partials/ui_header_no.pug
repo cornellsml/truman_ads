@@ -1,7 +1,7 @@
 .computer.only.tablet.only.row 
   .ui.borderless.fixed.menu
     .ui.container
-      a.item(href='/')
+      a.item(href='/')#headerHomeButton
         img.ui.tiny.image(src='/public/logo.png', id='logo')
       |  
       .right.menu
@@ -26,10 +26,12 @@
               .divider
               a.item(href='/me') My Profile
               .divider
+              a.item.viewPolicyDropdown View Policy
+              .divider
               a.item(href='/logout') Logout
 .mobile.only.row
   .ui.fluid.top.fixed.four.item.menu
-    a.item(href='/')
+    a.item(href='/')#headerHomeButton
       img.ui.tiny.image(src='/public/logo.png', id='cell_logo')
     if !user
       a.item(href='/login') Login
@@ -50,9 +52,6 @@
           .divider
           a.item(href='/me') My Profile
           .divider
+          a.item.viewPolicyDropdown View Policy
+          .divider
           a.item(href='/logout') Logout
-
-
-
-
-

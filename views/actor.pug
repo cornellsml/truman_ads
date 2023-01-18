@@ -1,6 +1,9 @@
-extends ui_layout
+extends ui_layout_no
   
 block content
+  
+  //-Change this URI to a CDN you are using for Photos
+  -var cdn = "";
   
   .computer.only.tablet.only.four.wide.column 
     .ui.card
@@ -67,8 +70,223 @@ block content
                   i.heart.icon
                   |  Like
                 a.ui.basic.red.left.pointing.label.count=val.likes
+
           if val.comments.length > 0
             .content
+              .ui.comments
+                each comment in val.comments
+                  //-IF this comment is USER made, do this
+                  if (user.createdAt.getTime() + comment.time) < Date.now()
+                    if comment.new_comment
+                      -console.log("New COMMENT AREA");
+                      .comment(commentID=comment.new_comment_id)
+                        a.avatar.image(href='/me')
+                          if user.profile.picture
+                            img(src='/user_post/'+user.profile.picture)
+                          else
+                            img(src=user.gravatar(60))
+                        .content
+                          a.author(href='/me')=user.profile.name || user.username || user.id
+                          .metadata
+                            span.date=(user.createdAt.getTime() + comment.time)
+                            .rating
+                              i.heart.icon
+                              span.num=0
+                              |  Likes
+                          .text=comment.body
+                          .actions
+                            a.like.comment Like
+                            a.flag.comment Flag
+                    //- Else this is a normal comment from the script
+                    else
+                      if (((comment.class === "unambig_flag") && (user.bully_group === "unambig")) || ((comment.class === "ambig_flag") && (user.bully_group === "ambig")))
+    
+                        if (((Date.now() - user.createdAt) <= 86400000) && (user.day1Response === "none")) || (((Date.now() - user.createdAt) > 86400000) && (user.day2Response == "none"))
+                          //-This is a bullying actor comment that requires content moderation messaging
+                          .ui.info.message
+                            .comment(commentID=comment.id)
+                              a.avatar(href='/user/'+comment.actor.username)
+                                //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
+                                img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                              .content
+                                a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                                .metadata
+                                  span.date=(user.createdAt.getTime() + comment.time)
+                                  .rating
+                                    if comment.liked
+                                      i.red.heart.icon
+                                      span= 0
+                                      |  Likes 
+                                    else
+                                      i.heart.icon
+                                      span.num= 0
+                                      |  Likes
+                                .text=comment.body
+                                .actions
+                                  if comment.liked
+                                    a.red.like.comment Like
+                                  else
+                                    a.like.comment Like
+                                  a.flag.comment Flag
+                            //-Customizing the message based on the flag_group the current user is in 
+                            if(user.flag_group === "none")
+                              .ui.icon.message.ignore
+                                .ui.disabled.inverted.dimmer
+                                  .ui.indeterminate.loader 
+                                i.flag.icon.float
+                                .content
+                                  .ui.header(style="color:black;") This comment has been flagged as harassment. Do you agree? 
+                                  a.ui.agree.button Yes
+                                  a.ui.disagree.button No 
+                            if(user.flag_group === "ai")
+                              .ui.icon.message.ignore
+                                .ui.disabled.inverted.dimmer
+                                  .ui.indeterminate.loader 
+                                i.laptop.icon.float
+                                .content
+                                  .ui.header(style="color:black;") Our automated system has flagged this comment as harassment. Do you agree? 
+                                  a.ui.agree.button Yes
+                                  a.ui.disagree.button No 
+                            if(user.flag_group === "user")  
+                              .ui.icon.message.ignore
+                                .ui.disabled.inverted.dimmer
+                                  .ui.indeterminate.loader 
+                                i.users.icon.float
+                                .content
+                                  .ui.header(style="color:black;") Other users have flagged this comment as harassment. Do you agree? 
+                                  a.ui.agree.button Yes
+                                  a.ui.disagree.button No 
+                                  
+                          .comment.modRespondedNo(commentID=comment.id style="display:none;")
+                            a.avatar(href='/user/'+comment.actor.username)
+                              //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
+                              img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                            .content
+                              a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                              .metadata
+                                span.date=(user.createdAt.getTime() + comment.time)
+                                .rating
+                                  if comment.liked
+                                    i.red.heart.icon
+                                    span= 0
+                                    |  Likes 
+                                  else
+                                    i.heart.icon
+                                    span.num= 0
+                                    |  Likes
+                              .text=comment.body
+                              .actions
+                                if comment.liked
+                                  a.red.like.comment Like
+                                else
+                                  a.like.comment Like
+                                a.flag.comment Flag
+                                //-Customizing the message based on the flag_group the current user is in 
+                            .ui.success.icon.message
+                              .ui.disabled.inverted.dimmer
+                                .ui.indeterminate.loader 
+                              i.balance.scale.icon.float
+                              .content
+                                h3.header Your response has been recorded. Do you want to view the moderation policy?
+                                a.ui.modInfo.button Yes
+                                a.ui.noModInfo.button No
+                                
+                          .comment.modRespondedYes(commentID=comment.id style="display:none;")
+                            .ui.success.icon.message
+                              .ui.disabled.inverted.dimmer
+                                .ui.indeterminate.loader 
+                              i.balance.scale.icon.float
+                              .content
+                                h3.header Your response has been recorded. Do you want to view the moderation policy?
+                                a.ui.modInfo.button Yes
+                                a.ui.noModInfo.button No
+                                
+                        else if (((Date.now() - user.createdAt) <= 86400000) && (user.day1Response === "yes")) || (((Date.now() - user.createdAt) > 86400000) && (user.day2Response == "yes"))
+                          //- do not show the posts
+                        
+                          //-span case 2
+                          //-.comment(commentID=comment.id)
+                            a.avatar(href='/user/'+comment.actor.username)
+                              //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
+                              img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                            .content
+                              a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                              .metadata
+                                span.date=(user.createdAt.getTime() + comment.time)
+                                .rating
+                                  if comment.liked
+                                    i.red.heart.icon
+                                    span=comment.likes
+                                    |  Likes 
+                                  else
+                                    i.heart.icon
+                                    span.num=comment.likes
+                                    |  Likes
+                              .text=comment.body
+                              .actions
+                                if comment.liked
+                                  a.red.like.comment Like
+                                else
+                                  a.like.comment Like
+                                a.flag.comment Flag
+                        else 
+                        
+                          .comment(commentID=comment.id)
+                            a.avatar(href='/user/'+comment.actor.username)
+                              //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
+                              img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                            .content
+                              a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                              .metadata
+                                span.date=(user.createdAt.getTime() + comment.time)
+                                .rating
+                                  if comment.liked
+                                    i.red.heart.icon
+                                    span=comment.likes
+                                    |  Likes 
+                                  else
+                                    i.heart.icon
+                                    span.num=comment.likes
+                                    |  Likes
+                              .text=comment.body
+                              .actions
+                                if comment.liked
+                                  a.red.like.comment Like
+                                else
+                                  a.like.comment Like
+                                a.flag.comment Flag
+                      else if ((comment.class === "unambig_flag" && user.bully_group === "ambig") || (comment.class === "ambig_flag" && user.bully_group === "unambig"))
+                        //-do nothing, dont show the message. Only show the message that matches the bully group. 
+                          This should just be a safeguard since the "wrong" comment shouldn't even be spliced into the feed to begin with. 
+                      else
+                        //-.ui.info.message
+                        //-This is a regular actor comment with no special messaging
+                        .comment(commentID=comment.id)
+                          a.avatar(href='/user/'+comment.actor.username)
+                            //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
+                            img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                          .content
+                            a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                            .metadata
+                              span.date=(user.createdAt.getTime() + comment.time)
+                              .rating
+                                if comment.liked
+                                  i.red.heart.icon
+                                  span=comment.likes
+                                  |  Likes 
+                                else
+                                  i.heart.icon
+                                  span.num=comment.likes
+                                  |  Likes
+                            .text=comment.body
+                            .actions
+                              if comment.liked
+                                a.red.like.comment Like
+                              else
+                                a.like.comment Like
+                              a.flag.comment Flag
+
+            //-.content
               .ui.comments
                 each comment in val.comments
                   //-IF this comment is USER made, do this
@@ -118,6 +336,7 @@ block content
                             else
                               a.like.comment Like
                             a.flag.comment Flag
+                            
           .extra.content
             .ui.fluid.left.labeled.right.icon.input
               .ui.label
@@ -214,3 +433,14 @@ block content
           .ui.right.floated.green.ok.inverted.button
             i.undo.icon
             |         Un-Block User
+            
+            
+block scripts
+  script().
+    $(window).on('load', function(){
+      $('.ui.agree.button').closest('.ui.fluid.card.dim').css({
+        //'box-shadow':'0 0 5px 5px #FF0000',
+        'background-color':'rgba(255, 0, 0, 0.2)'
+      });
+      $('.ui.agree.button').closest('.info.message').css('box-shadow','0 0 5px 5px #FF0000');
+    });

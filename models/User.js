@@ -1,5 +1,4 @@
-//const bcrypt = require('bcrypt');
-const bcrypt = require('@node-rs/bcrypt');
+const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -12,6 +11,7 @@ const userSchema = new mongoose.Schema({
   username: String,
   active: {type: Boolean, default: true},
   isAdmin: {type: Boolean, default: false},
+  endSurveyLink: String,
 
   completed: {type: Boolean, default: false},
 
@@ -20,14 +20,29 @@ const userSchema = new mongoose.Schema({
   numComments: { type: Number, default: -1 }, //not including posts
   numActorReplies: { type: Number, default: -1 }, //not including posts
 
-  numPostLikes: { type: Number, default: 0 }, 
-  numCommentLikes: { type: Number, default: 0 }, 
+  numPostLikes: { type: Number, default: 0 },
+  numCommentLikes: { type: Number, default: 0 },
 
   lastNotifyVisit: Date,
 
   mturkID: String,
 
-  group: String, //full group type
+  group: String, //full group type for post displays
+  moderation_group: String, //Full group type for the content moderation study
+  flag_group: String, //Flag type (ai, user, none)
+  bully_group: String, //Type of bullying group (ambig, unambig)
+  day1Response: {type: String, default: 'none'}, //Whether or not the user said yes/no to the moderation question
+  day1ResponseTime: { type: Number, default: 0 }, //time that the user responded to the moderation question
+  day1ViewPolicyResponse: {type: String, default: 'none'}, //Whether the user said yes or no to the moderation follow up question (do you want to see our policy?) (yes, no, none)
+  day1ViewPolicyResponseTime: { type: Number, default: 0 }, //only records when the user responded yes/no to view policy question
+  day1ViewPolicyTimes: [Number], //How long the user viewed the policy (can be multiple times from multiple sources)
+  day1ViewPolicySources: [String], //How the user accessed the policy (dropdown or from the yes/no followup question) (menu, comment)
+  day2Response: {type: String, default: 'none'}, //Whether or not the user said yes/no to the moderation question
+  day2ResponseTime: { type: Number, default: 0 }, //time that the user responded to the moderation question
+  day2ViewPolicyResponse: {type: String, default: 'none'}, //Whether the user said yes or no to the moderation follow up question (do you want to see our policy?) (yes, no, none)
+  day2ViewPolicyResponseTime: { type: Number, default: 0 }, //only records when the user responded yes/no to view policy question
+  day2ViewPolicyTimes: [Number], //When the user viewed the policy (can be multiple times from multiple sources)
+  day2ViewPolicySources: [String], //How the user accessed the policy (dropdown or from the yes/no followup question) (menu, comment)
   ui: String,    //just UI type (no or ui)
   notify: String, //notification type (no, low or high)
   script_type: String, //type of script they are running in
@@ -42,9 +57,9 @@ const userSchema = new mongoose.Schema({
   blocked: [String],
   reported: [String],
 
-  study_days: {
+  study_days: { //how many times the user looked at the feed per day
       type: [Number],
-      default: [0, 0, 0]
+      default: [0, 0]
     },
 
   posts: [new Schema({
@@ -65,7 +80,7 @@ const userSchema = new mongoose.Schema({
       absTime: Number,//millisecons
       new_comment: {type: Boolean, default: false}, //is new comment
       isUser: {type: Boolean, default: false}, //is this a comment on own post
-      liked: {type: Boolean, default: false}, //has the user liked it? 
+      liked: {type: Boolean, default: false}, //has the user liked it?
       flagged: {type: Boolean, default: false},//is Flagged?
       likes: Number
       }, { versionKey: false })],
@@ -134,15 +149,19 @@ const userSchema = new mongoose.Schema({
         readTime : [Number],
         flagTime  : [Number],
         likeTime  : [Number],
+        unlikeTime  : [Number],
         replyTime  : [Number],
-        
+        viewedTime : [Number], //how long the user spent looking at the post (does not record times less than 1.5 seconds)
+
         comments: [new Schema({
           comment: {type: Schema.ObjectId},//ID Reference for Script post comment
           liked: {type: Boolean, default: false}, //is liked?
           flagged: {type: Boolean, default: false},//is Flagged?
+          moderationResponse: {type: String, default: 'none'}, //If the user clicked 'yes', 'no', or no activity 'none' to the question "do you agree?"
+          moderationResponseTime: [Number], //array of moderation response times
           flagTime  : [Number], //array of flag times
           likeTime  : [Number], //array of like times
-
+          unlikeTime  : [Number], //array of unlike times
           new_comment: {type: Boolean, default: false}, //is new comment
           new_comment_id: Number,//ID for comment
           comment_body: String, //Original Body of User Post
@@ -164,55 +183,43 @@ const userSchema = new mongoose.Schema({
 
 /**
  * Password hash middleware.
- **/
-userSchema.pre('save', async function save(next) {
+ */
+userSchema.pre('save', function save(next) {
   const user = this;
   if (!user.isModified('password')) { return next(); }
-  try {
-    user.password = await bcrypt.hash(user.password, 10);
-    next();
-  } catch (err) {
-    next(err);
-  }
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) { return next(err); }
+    bcrypt.hash(user.password, salt, (err, hash) => {
+      if (err) { return next(err); }
+      user.password = hash;
+      next();
+    });
+  });
 });
 
 /**
  * Helper method for validating user's password.
  */
-userSchema.methods.comparePassword = async function comparePassword(candidatePassword, cb) {
-  try {
-    cb(null, await bcrypt.verify(candidatePassword, this.password));
-  } catch (err) {
-    cb(err);
-  }
+userSchema.methods.comparePassword = function comparePassword(candidatePassword, cb) {
+  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+    cb(err, isMatch);
+  });
 };
 
 /**
- * Add Log to User if access is 1 hour from last use.
+ * Add Log to User
  */
 userSchema.methods.logUser = function logUser(time, agent, ip) {
-  
-  if(this.log.length > 0)
-  {
-    var log_time = new Date(this.log[this.log.length -1].time);
-
-    if(time >= (log_time.getTime() + 3600000))
-    {
-      var log = {};
-      log.time = time;
-      log.userAgent = agent;
-      log.ipAddress = ip;
-      this.log.push(log);
+  var log = {};
+  log.time = time;
+  log.userAgent = agent;
+  log.ipAddress = ip;
+  this.log.push(log);
+  this.save((err) => {
+    if (err) {
+      return next(err);
     }
-  }
-  else if(this.log.length == 0)
-  {
-    var log = {};
-    log.time = time;
-    log.userAgent = agent;
-    log.ipAddress = ip;
-    this.log.push(log);
-  }
+  });
 
 };
 
@@ -235,7 +242,7 @@ userSchema.methods.logPostStats = function logPage(postID) {
         {
           log.DayOneVists = this.study_days[0];
           log.DayTwoVists = this.study_days[1];
-          log.DayThreeVists = this.study_days[2];
+          //log.DayThreeVists = this.study_days[2];
         }
 
     log.GeneralLikeNumber = this.numPostLikes + this.numCommentLikes;
@@ -244,8 +251,8 @@ userSchema.methods.logPostStats = function logPage(postID) {
     log.GeneralFlagNumber = 0;
 
 
-    for (var k = this.feedAction.length - 1; k >= 0; k--) 
-    {    
+    for (var k = this.feedAction.length - 1; k >= 0; k--)
+    {
       if(this.feedAction[k].post != null)
       {
         if(this.feedAction[k].liked)
@@ -306,7 +313,7 @@ userSchema.methods.getPostsAndReplies = function getPostsAndReplies() {
 
 //Return the user post from its ID
 userSchema.methods.getUserPostByID = function(postID) {
-  
+
   return this.posts.find(x => x.postID == postID);
 
 };
@@ -314,19 +321,19 @@ userSchema.methods.getUserPostByID = function(postID) {
 
 //Return the user reply from its ID
 userSchema.methods.getUserReplyByID = function(replyID) {
-  
+
   return this.posts.find(x => x.replyID == replyID);
 
 };
 
 //Return the user reply from its ID
 userSchema.methods.getActorReplyByID = function(actorReplyID) {
-  
+
   return this.posts.find(x => x.actorReplyID == actorReplyID);
 
 };
 
-//get user posts within the min/max time period 
+//get user posts within the min/max time period
 userSchema.methods.getPostInPeriod = function(min, max) {
     //concat posts & reply
     return this.posts.filter(function(item) {

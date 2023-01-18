@@ -10,7 +10,7 @@ $(window).on("load", function() {
   $('#loading').hide();
   $('#content').attr('style', 'block');
   $('#content').fadeIn('slow');
-  //close messages from flash message 
+  //close messages from flash message
   $('.message .close')
   .on('click', function() {
     $(this)
@@ -22,9 +22,9 @@ $(window).on("load", function() {
   //check bell
   if (!(top.location.pathname === '/login' || top.location.pathname === '/signup'))
   {
-      
+
     $.getJSON( "/bell", function( json ) {
-      
+
       if (json.result)
       {
         $("i.big.alarm.icon").replaceWith( '<i class="big icons"><i class="red alarm icon"></i><i class="corner yellow lightning icon"></i></i>' );
@@ -45,7 +45,7 @@ $(window).on("load", function() {
 
   //get add new feed post modal to work
   $("#newpost, a.item.newpost").click(function () {
-    $(' .ui.tiny.post.modal').modal('show'); 
+    $(' .ui.tiny.post.modal').modal('show');
 });
 
   //new post validator (picture and text can not be empty)
@@ -74,9 +74,9 @@ $(window).on("load", function() {
     },
 
     onSuccess:function(event, fields){
-      console.log("Event is :");
+      //console.log("Event is :");
       //console.log(event);
-      console.log("fields is :");
+      //console.log("fields is :");
       //console.log(fields);
       $(".ui.feed.form")[0].submit();
     }
@@ -85,25 +85,10 @@ $(window).on("load", function() {
 
   $('.ui.feed.form').submit(function(e) {
         e.preventDefault();
-        console.log("Submit the junks!!!!")
-        //$('.ui.tiny.nudge.modal').modal('show'); 
+        //console.log("Submit the junks!!!!")
+        //$('.ui.tiny.nudge.modal').modal('show');
         //return true;
         });
-
-  $('.ui.feed.form').submit(function(e) {
-        e.preventDefault();
-        console.log("Submit the junks!!!!")
-        //$('.ui.tiny.nudge.modal').modal('show'); 
-        //return true;
-        });
-
-  //Sign Up Button
-  $('input.ui.green.button#pri')
-  .on('click', function() {
-    console.log("Submit the junks!!!!")
-    $('.ui.tiny.nudge.modal').modal('show');
-  });
-
 
 
 //Picture Preview on Image Selection
@@ -115,17 +100,17 @@ function readURL(input) {
                 $('#imgInp').attr('src', e.target.result);
                 //console.log("FILE is "+ e.target.result);
             }
-            
+
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
+
     $("#picinput").change(function(){
         //console.log("@@@@@ changing a photo");
         readURL(this);
     });
 
-//Modal to show "other users" in Notifications 
+//Modal to show "other users" in Notifications
 /*
 $('a.others').click(function(){
   let key = $(this).attr('key');
@@ -137,18 +122,18 @@ $('a.others').click(function(){
       var lazyLoad = new LazyLoad({
          container: el /// <--- not sure if this works here, read below
     });
-      
-      
-      
+
+
+
     }
-  }).modal('show')  
+  }).modal('show')
 }); */
 
 //add humanized time to all posts
 $('.right.floated.time.meta, .date').each(function() {
     var ms = parseInt($(this).text(), 10);
     let time = new Date(ms);
-    $(this).text(humanized_time_span(time)); 
+    $(this).text(humanized_time_span(time));
 });
 
   //Sign Up Button
@@ -209,29 +194,29 @@ $("i.big.send.link.icon").click(function() {
   var card = $(this).parents( ".ui.fluid.card" );
   var comments = card.find( ".ui.comments" )
   //no comments area - add it
-  console.log("Comments is now "+comments.length)
+  //console.log("Comments is now "+comments.length)
   if( !comments.length )
   {
     //.three.ui.bottom.attached.icon.buttons
-    console.log("Adding new Comments sections")
+    //console.log("Adding new Comments sections")
     var buttons = card.find( ".three.ui.bottom.attached.icon.buttons" )
     buttons.after( '<div class="content"><div class="ui comments"></div>' );
     var comments = card.find( ".ui.comments" )
   }
   if (text.trim() !== '')
   {
-    console.log(text)
+    //console.log(text)
     var date = Date.now();
     var ava = $(this).siblings('.ui.label').find('img.ui.avatar.image');
     var ava_img = ava.attr( "src" );
     var ava_name = ava.attr( "name" );
     var postID = card.attr( "postID" );
 
-    var mess = '<div class="comment"> <a class="avatar"> <img src="'+ava_img+'"> </a> <div class="content"> <a class="author">'+ava_name+'</a> <div class="metadata"> <span class="date">'+humanized_time_span(date)+'</span> <i class="heart icon"></i> 0 Likes </div> <div class="text">'+text+'</div> <div class="actions"> <a class="like">Like</a> <a class="flag">Flag</a> </div> </div> </div>';   
+    var mess = '<div class="comment"> <a class="avatar"> <img src="'+ava_img+'"> </a> <div class="content"> <a class="author">'+ava_name+'</a> <div class="metadata"> <span class="date">'+humanized_time_span(date)+'</span> <i class="heart icon"></i> 0 Likes </div> <div class="text">'+text+'</div> <div class="actions"> <a class="like">Like</a> <a class="flag">Flag</a> </div> </div> </div>';
     $(this).siblings( "input.newcomment").val('');
     comments.append(mess);
-    console.log("######### NEW COMMENTS:  PostID: "+postID+", new_comment time is "+date+" and text is "+text);
-   
+    //console.log("######### NEW COMMENTS:  PostID: "+postID+", new_comment time is "+date+" and text is "+text);
+
     if (card.attr( "type" )=='userPost')
       $.post( "/userPost_feed", { postID: postID, new_comment: date, comment_text: text, _csrf : $('meta[name="csrf-token"]').attr('content') } );
     else
@@ -272,7 +257,7 @@ $("i.big.send.link.icon").click(function() {
     e.preventDefault();
     $.post($(this).attr('action'), $(this).serialize(), function(res){
         // Do something with the response `res`
-        console.log(res);
+        //console.log(res);
         // Don't forget to hide the loading indicator!
     });
     //return false; // prevent default action
@@ -293,9 +278,9 @@ $("i.big.send.link.icon").click(function() {
     $('.ui.small.basic.blocked.modal')
       .modal({
         closable  : false,
-        onDeny    : function(){ 
+        onDeny    : function(){
           //report user
-          
+
         },
         onApprove : function() {
           //unblock user
@@ -305,8 +290,8 @@ $("i.big.send.link.icon").click(function() {
       .modal('show')
     ;
 
-    
-    console.log("***********Block USER "+username);
+
+    //console.log("***********Block USER "+username);
     $.post( "/user", { blocked: username, _csrf : $('meta[name="csrf-token"]').attr('content') } );
 
   });
@@ -315,9 +300,9 @@ $("i.big.send.link.icon").click(function() {
   $('.ui.on.small.basic.blocked.modal')
   .modal({
     closable  : false,
-    onDeny    : function(){ 
+    onDeny    : function(){
       //report user
-      
+
     },
     onApprove : function() {
       //unblock user
@@ -335,10 +320,17 @@ $("i.big.send.link.icon").click(function() {
 
     //if already liked, unlike if pressed
     if ( $( this ).hasClass( "red" ) ) {
-        console.log("***********UNLIKE: post");
+        //console.log("***********UNLIKE: post");
         $( this ).removeClass("red");
         var label = $(this).next("a.ui.basic.red.left.pointing.label.count");
         label.html(function(i, val) { return val*1-1 });
+        var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+        var unlike = Date.now();
+        //console.log("***********UNLIKE: post "+postID+" at time "+unlike);
+        if ($(this).closest( ".ui.fluid.card" ).attr( "type" )=='userPost')
+          $.post( "/userPost_feed", { postID: postID, unlike: unlike, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+        else
+          $.post( "/feed", { postID: postID, unlike: unlike, _csrf : $('meta[name="csrf-token"]').attr('content') } );
     }
     //since not red, this button press is a LIKE action
     else{
@@ -347,7 +339,7 @@ $("i.big.send.link.icon").click(function() {
       label.html(function(i, val) { return val*1+1 });
       var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
       var like = Date.now();
-      console.log("***********LIKE: post "+postID+" at time "+like);
+      //console.log("***********LIKE: post "+postID+" at time "+like);
 
       if ($(this).closest( ".ui.fluid.card" ).attr( "type" )=='userPost')
         $.post( "/userPost_feed", { postID: postID, like: like, _csrf : $('meta[name="csrf-token"]').attr('content') } );
@@ -364,7 +356,7 @@ $("i.big.send.link.icon").click(function() {
 
     //if already liked, unlike if pressed
     if ( $( this ).hasClass( "red" ) ) {
-        console.log("***********UNLIKE: post");
+        //console.log("***********UNLIKE: post");
         //Un read Like Button
         $( this ).removeClass("red");
 
@@ -373,6 +365,16 @@ $("i.big.send.link.icon").click(function() {
 
         var label = comment.find( "span.num" );
         label.html(function(i, val) { return val*1-1 });
+
+        var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+        var commentID = comment.attr("commentID");
+        var unlike = Date.now();
+
+        if ($(this).closest( ".ui.fluid.card" ).attr( "type" )=='userPost'){
+          //$.post( "/userPost_feed", { postID: postID, commentID: commentID, like: like, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+        } else {
+          $.post( "/feed", { postID: postID, commentID: commentID, unlike: unlike, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+        }
     }
     //since not red, this button press is a LIKE action
     else{
@@ -386,7 +388,7 @@ $("i.big.send.link.icon").click(function() {
       var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
       var commentID = comment.attr("commentID");
       var like = Date.now();
-      console.log("#########COMMENT LIKE:  PostID: "+postID+", Comment ID: "+commentID+" at time "+like);
+      //console.log("#########COMMENT LIKE:  PostID: "+postID+", Comment ID: "+commentID+" at time "+like);
 
       if ($(this).closest( ".ui.fluid.card" ).attr( "type" )=='userPost')
         $.post( "/userPost_feed", { postID: postID, commentID: commentID, like: like, _csrf : $('meta[name="csrf-token"]').attr('content') } );
@@ -398,6 +400,7 @@ $("i.big.send.link.icon").click(function() {
   });
 
    //this is the FLAG button
+   //flag a comment
   $('a.flag.comment')
   .on('click', function() {
 
@@ -405,9 +408,9 @@ $("i.big.send.link.icon").click(function() {
     var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
     var typeID = $(this).closest( ".ui.fluid.card" ).attr( "type" );
     var commentID = comment.attr("commentID");
-    comment.replaceWith( '<div class="comment" style="background-color:black;color:white"><h5 class="ui inverted header"><span>The admins will review this post further. We are sorry you had this experience.</span></h5></div>' );
+    comment.replaceWith( '<div class="comment" commentID='+commentID+' style="background-color:black;color:white"><h5 class="ui inverted header"><span>The admins will review this post further. We are sorry you had this experience.</span></h5></div>' );
     var flag = Date.now();
-    console.log("#########COMMENT FLAG:  PostID: "+postID+", Comment ID: "+commentID+"  TYPE is "+typeID+" at time "+flag);
+    //console.log("#########COMMENT FLAG:  PostID: "+postID+", Comment ID: "+commentID+"  TYPE is "+typeID+" at time "+flag);
 
     if (typeID=='userPost')
       $.post( "/userPost_feed", { postID: postID, commentID: commentID, flag: flag, _csrf : $('meta[name="csrf-token"]').attr('content') } );
@@ -416,26 +419,128 @@ $("i.big.send.link.icon").click(function() {
 
   });
 
+  //this is the "yes" button when responding to the content moderation question
+ $('.agree')
+ .on('click', function() {
+
+   var comment = $(this).parents( ".ui.info.message").children('.comment');
+   var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+   var typeID = $(this).closest( ".ui.fluid.card" ).attr( "type" );
+   var commentID = comment.attr("commentID");
+   var nextQuestion = $(this).parents('.ui.info.message').siblings('.comment.modRespondedYes');
+   var currentQuestion =  $(this).parents('.ui.info.message');
+   var clickedYes = Date.now();
+   $(this).closest( ".ui.fluid.card" ).css({'background-color':''});
+   $(this).closest('.info.message').css({'box-shadow':''});
+   $(this).parent('.content').siblings('.ui.inverted.dimmer').removeClass('disabled').addClass('active');
+
+   $.post( "/feed", { postID: postID, commentID: commentID, clickedYes: clickedYes, _csrf : $('meta[name="csrf-token"]').attr('content') }, function(){
+     currentQuestion.hide();
+     nextQuestion.show();
+   } );
+ });
+
+ //this is the "no" button when responding to the content moderation question
+  $('.disagree')
+  .on('click', function() {
+    var comment = $(this).parents( ".ui.info.message").children('.comment');
+    var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+    var typeID = $(this).closest( ".ui.fluid.card" ).attr( "type" );
+    var commentID = comment.attr("commentID");
+    var currentQuestion = $(this).parents('.ui.info.message');
+    var nextQuestion = $(this).parents('.ui.info.message').siblings('.comment.modRespondedNo');
+    var clickedNo = Date.now();
+    $(this).closest( ".ui.fluid.card" ).css({'background-color':''});
+    $(this).closest('.info.message').css({'box-shadow':''});
+    $(this).parent('.content').siblings('.ui.inverted.dimmer').removeClass('disabled').addClass('active');
+
+    $.post( "/feed", { postID: postID, commentID: commentID, clickedNo: clickedNo, _csrf : $('meta[name="csrf-token"]').attr('content') }, function(){
+      currentQuestion.hide();
+      nextQuestion.show();
+    } );
+
+  });
+
+  //this is the "view policy" button after responding to the content moderation question
+   $('.modInfo')
+   .on('click', function() {
+     var comment = $(this).parents( ".comment" );
+     var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+     var typeID = $(this).closest( ".ui.fluid.card" ).attr( "type" );
+     var commentID = comment.attr("commentID");
+     var clickedViewPolicy = Date.now();
+     //$(this).hide();
+     $(this).parent('.content').siblings('.ui.inverted.dimmer').removeClass('disabled').addClass('active');
+     //$(this).siblings(".noModInfo").hide();
+     //console.log("#########COMMENT FLAG:  PostID: "+postID+", Comment ID: "+commentID+"  TYPE is "+typeID+" at time "+clickedViewPolicy);
+
+     $.post( "/feed", { postID: postID, commentID: commentID, clickedViewPolicy: clickedViewPolicy, _csrf : $('meta[name="csrf-token"]').attr('content') }, function(){
+       window.location.href='/policy';
+     } );
+
+   });
+
+ //this is the "no, don't view policy" button after responding to the content moderation question
+  $('.noModInfo')
+  .on('click', function() {
+    var comment = $(this).parents( ".comment" );
+    var postID = $(this).closest( ".ui.fluid.card" ).attr( "postID" );
+    var typeID = $(this).closest( ".ui.fluid.card" ).attr( "type" );
+    var commentID = comment.attr("commentID");
+    var changeHeader = $(this).siblings(".header");
+    var loaderDimmer = $(this).parent('.content').siblings('.ui.inverted.dimmer');
+    var clickedNoViewPolicy = Date.now();
+    $(this).hide();
+    $(this).siblings(".modInfo").hide();
+    $(this).parent('.content').siblings('.ui.inverted.dimmer').removeClass('disabled').addClass('active');
+    //console.log("#########COMMENT FLAG:  PostID: "+postID+", Comment ID: "+commentID+"  TYPE is "+typeID+" at time "+clickedNoViewPolicy);
+    $.post( "/feed", { postID: postID, commentID: commentID, clickedNoViewPolicy: clickedNoViewPolicy, _csrf : $('meta[name="csrf-token"]').attr('content') }, function(){
+      changeHeader.text("Thank you! Your response has been recorded.");
+      loaderDimmer.removeClass('active').addClass('disabled');
+    } );
+  });
+
+  //this is to track if a user clicked to view the policy from the dropdown menu
+  $(".viewPolicyDropdown")
+  .on('click', function(){
+    var viewPolicyDropdownTime = Date.now();
+    $.post( "/view_policy", { viewPolicyDropdownTime: viewPolicyDropdownTime, _csrf : $('meta[name="csrf-token"]').attr('content') }, function(){
+      window.location.href='/policy';
+    } );
+  })
+
   //this is the POST FLAG button
+  //flag a post
   $('.flag.button')
   .on('click', function() {
 
      var post = $(this).closest( ".ui.fluid.card.dim");
      var postID = post.attr( "postID" );
      var flag = Date.now();
-     console.log("***********FLAG: post "+postID+" at time "+flag);
+     //console.log("***********FLAG: post "+postID+" at time "+flag);
      $.post( "/feed", { postID: postID, flag: flag, _csrf : $('meta[name="csrf-token"]').attr('content') } );
-     console.log("Removing Post content now!");
+     //console.log("Removing Post content now!");
      post.find(".ui.dimmer.flag").dimmer({
                    closable: false
                   })
                   .dimmer('show');
-      //repeat to ensure its closable             
+      //repeat to ensure its closable
       post.find(".ui.dimmer.flag").dimmer({
                    closable: false
                   })
                   .dimmer('show');
-    
+
+
+  });
+
+  //this is the POST REPLY button
+  $('.reply.button')
+  .on('click', function () {
+
+    let parent = $(this).closest(".ui.fluid.card");
+    let postID = parent.attr("postID");
+
+    parent.find("input.newcomment").focus();
 
   });
 
@@ -449,122 +554,95 @@ $("i.big.send.link.icon").click(function() {
 
      var postID = $(this).closest( ".ui.fluid.card.dim" ).attr( "postID" );
      var reread = Date.now();
-     console.log("##########REREAD######SEND TO DB######: post "+postID+" at time "+reread);
+     //console.log("##########REREAD######SEND TO DB######: post "+postID+" at time "+reread);
      $.post( "/feed", { postID: postID, start: reread, _csrf : $('meta[name="csrf-token"]').attr('content') } );
      //maybe send this later, when we have a re-read event to time???
      //$.post( "/feed", { postID: postID, like: like, _csrf : $('meta[name="csrf-token"]').attr('content') } );
 
   });
 
+//adding animations to the moderation comment
+$('.ui.info.message')
+.visibility({
+  once       : false,
+  continuous : false,
+  observeChanges: true,
+  //throttle:100,
+  initialCheck : true,
+
+  onBottomVisible:function(calculations){
+    if($(this).is(':visible')){
+      $(this).transition('pulse');
+    }
+  }
+});
 
 //////TESTING
-/*setTimeout(function() {
-  //.ui.fluid.card.test
-    $('.ui.fluid.card.test .content.read')
-      .transition({
-        animation: 'fade down',
-        duration   : '1.5s',
-      });
-      }.bind(this), 1500);
+$('.ui.fluid.card .img.post')
+.visibility({
+  once       : false,
+  continuous : false,
+  observeChanges: true,
+  //throttle:100,
+  initialCheck : true,
 
-  //Dimm cards as user scrolls - send Post to update DB on timing of events .image
-  //$('.ui.fluid.card.dim') img.post $('.ui.fluid.card.dim .image'
-  /*
-  $('img.post.s3, .content.pro.s3')
-  .visibility({
-    once       : false,
-    continuous : false,
-    observeChanges: true,
-    //throttle:100,
-    offset: 250,
-    
-    //USER HAS NOW READ THE POST (READ EVENT) 
-    //onBottomVisibleReverse:function(calculations) { onBottomPassed
-      onBottomPassed:function(calculations) {
-        console.log(":::::Now passing onBottomPassed:::::");
-        var parent = $(this).parents(".ui.fluid.card.dim, .profile_card");
+//handling scrolling down like normal
+  onBottomVisible:function(calculations){
+    var startTime = Date.now();
+    $(this).siblings(".content").children(".myTimer").text(startTime);
+    if(calculations.topVisible){ //then we are scrolling DOWN normally and this is the START time
+      $(this).siblings(".content").children(".myTimer").text(startTime);
+    } else { //then we are scrolling UP and this event does not matter!
+    }
+  },
 
-        //As Post is not READ and We have a transparency condistion - Show Read Conent and send Post READ event
-        if ((!(parent.attr( "state" )=='read')) && (parent.attr( "transparency" )=='yes'))
-        {
-          console.log("::::UI passing::::Adding Seen Box Now::::::::");
+  onTopPassed:function(calculations){
+    var endTime = Date.now();
+    var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
+    var totalViewTime = endTime - startTime; //TOTAL TIME HERE
+    //POST HERE
+    var parent = $(this).parents(".ui.fluid.card");
+    var postID = parent.attr( "postID" );
+    //console.log(postID);
+    //Don't record it if it's longer than 24 hours, do this check because refresh causes all posts to be marked as "viewed" for 49 years.(???)
+    if(totalViewTime < 86400000){
+      $.post( "/feed", { postID: postID, viewed: totalViewTime, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+    }
+    //console.log("Total time: " + totalViewTime);
+    //console.log($(this).siblings(".content").children(".description").text());
+  },
+//end handling downward scrolling
 
-          var postID = parent.attr( "postID" );
-          var read = Date.now();
+//handling scrolling back upwards
+  onTopPassedReverse:function(calculations){
+    var startTime = Date.now();
+    $(this).siblings(".content").children(".myTimer").text(startTime);
+  },
 
-          //actual show the element
-          
-           parent.find('.read')
-            .transition({
-              animation: 'fade',
-              duration   : '1.5s',
-            });
-          //$('img.post').visibility('refresh')  $('img.post, .content.pro').visibility('refresh')
-          //<div style="text-align:center;background:#b5bfce" class="content read"> <p>You've read this!</p><a href="/user/"><img src="/profile_pictures/" class="ui avatar image"><span>cat</span></a> has been notified.</div>
-          //parent.append( '<div style="text-align:center;background:#b5bfce" class="content read"> <p>You have read this!</p><a href="/user/'+parent.attr( "actor_un" )+'"><img src="/profile_pictures/'+parent.attr( "actor_pic" )+'" class="ui avatar image"><span>'+parent.attr( "actor_name" )+'</span></a> has been notified.</div>' );
-          parent.attr( "state", "read" );
-          console.log("::::UI passing::::SENDING POST TO DB::::::::");
-          $.post( "/feed", { postID: postID, read: read, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+  onBottomVisibleReverse:function(calculations){
+    if(calculations.bottomPassed){
 
-        }
+    } else {
+      //eND TIME FOR SCROLLING UP
+      var endTime = Date.now();
+      var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
+      var totalViewTime = endTime - startTime; //TOTAL TIME HERE
+      //POST HERE
+      var parent = $(this).parents(".ui.fluid.card");
+      var postID = parent.attr( "postID" );
+      //console.log("PostID: " + postID);
+      //console.log(postID);
+      //Don't record it if it's longer than 24 hours, do this check because refresh causes all posts to be marked as "viewed" for 49 years. (???)
+      if(totalViewTime < 86400000){
+        $.post( "/feed", { postID: postID, viewed: totalViewTime, _csrf : $('meta[name="csrf-token"]').attr('content') } );
+      }
+      //console.log("Total time: " + totalViewTime);
+      //console.log($(this).siblings(".content").children(".description").text());
+    }
+//end handling scrolling back updwards
 
-        //if we are not in UI condistion, and we are reading, then send off Post to DB for new Read Time
-        //Maybe kill this so we don't fill the DB with all this stuff. Seems kind of silly (or only do like 10, etc)
-        //else if ((parent.attr( "ui" )=='no') && (parent.attr( "state" )=='unread'))
+  }
 
-        //Need to get all "read" and "start" times in non-UI case (as all other times rests on it)
-        else if ((parent.attr( "transparency" )=='no'))
-        {
-          console.log("::::NO UI passing:::");
-          //console.log("::::first time reading -> UNREAD:::");
-          var postID = parent.attr( "postID" );
-          var read = Date.now();
-          //set to read now
-          //parent.attr( "state" , "read");
-
-          //send post to server to update DB that we have now read this
-          console.log("::::NO UI :::::READ::::SENDING POST TO DB:::::::POST:"+postID+" at time "+read);
-          if (parent.attr( "profile" )=="yes")
-            $.post( "/pro_feed", { postID: postID, read: read, _csrf : $('meta[name="csrf-token"]').attr('content') } );
-          else
-            $.post( "/feed", { postID: postID, read: read, _csrf : $('meta[name="csrf-token"]').attr('content') } );
-        }
-
-        //UI and DIMMED READ, which does not count as a READ
-        else
-          {console.log("::::passing::::Already dimmed - do nothing - transparency is now "+parent.attr( "transparency" ));}
-
-      },
-
-    ////POST IS NOW Visiable - START EVENT
-    onBottomVisible:function(calculations) {
-        console.log("@@@@@@@ Now Seen @@@@@@@@@");
-        var parent = $(this).parents(".ui.fluid.card.dim, .profile_card");
-        
-        var postID = parent.attr( "postID" );
-        var start = Date.now();
-        console.log("@@@@@@@ UI!!!! @@@@@@SENDING TO DB@@@@@@START POST UI has seen post "+postID+" at time "+start);
-        if (parent.attr( "profile" )=="yes")
-          $.post( "/pro_feed", { postID: postID, start: start, _csrf : $('meta[name="csrf-token"]').attr('content') } );
-        else
-          $.post( "/feed", { postID: postID, start: start, _csrf : $('meta[name="csrf-token"]').attr('content') } );
-
-        }
-  })
-;//WTF!!!
-//lazy loading of images
-  $('.img.post img')
-  .visibility({
-    type       : 'image'
-    //offset: 450,
-    //transition : 'fade in',
-    //duration   : 1000,
-
-    
-  })
-;
-*/
-
-
+});
 
 });

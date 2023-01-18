@@ -19,15 +19,15 @@ exports.getNotifications = (req, res) => {
   console.log("START Notification");
 
   User.findById(req.user.id)
-  .populate({ 
+  .populate({
        path: 'posts.reply',
        model: 'Script',
        populate: {
          path: 'actor',
          model: 'Actor'
-       } 
+       }
     })
-  .populate({ 
+  .populate({
        path: 'posts.actorAuthor',
        model: 'Actor'
     })
@@ -58,7 +58,7 @@ exports.getNotifications = (req, res) => {
 
     if (user.posts.length == 0)
     {
-        //peace out - send empty page - 
+        //peace out - send empty page -
         //or deal with replys or something IDK
         console.log("No User Posts yet. Sending to -1 to PUG");
         res.render('notification', { notification_feed: -1 });
@@ -83,7 +83,7 @@ exports.getNotifications = (req, res) => {
 
           if (notification_feed.length == 0)
           {
-            //peace out - send empty page - 
+            //peace out - send empty page -
             //or deal with replys or something IDK
             console.log("No User Posts yet. Sending to -1 to PUG");
             res.render('notification', { notification_feed: -1 });
@@ -97,9 +97,9 @@ exports.getNotifications = (req, res) => {
           for (var i = 0, len = notification_feed.length; i < len; i++) {
 
             //ADD big IF/ELSE IF on userpost/user Reply/ Actor Reply/ Actor Reply Read
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            /*console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
             console.log("@@@@@@@@Notification is "+notification_feed[i].id);
-            console.log("########Notification is type "+notification_feed[i].notificationType);
+            console.log("########Notification is type "+notification_feed[i].notificationType);*/
 
             //Do all things that reference userPost (read,like, actual copy of ActorReply)
             if (notification_feed[i].userPost >= 0)
@@ -107,19 +107,19 @@ exports.getNotifications = (req, res) => {
               var userPostID = notification_feed[i].userPost;
               //console.log("Looking at user post number: "+ userPostID)
               var user_post = user.getUserPostByID(userPostID);
-              
+
               //!!!!!!!!@@@@@@@@@@@@@@@This needs to change ()
               var time_diff = Date.now() - user_post.absTime;
 
-              console.log("USER POST NOTIFICATION");
+              /*console.log("USER POST NOTIFICATION");
               console.log("########Notification is UserPostID "+notification_feed[i].userPost);
               console.log("########TIME in UserPostID is "+notification_feed[i].time);
-              console.log("########General Time is "+time_diff);
-              
+              console.log("########General Time is "+time_diff);*/
+
               //check if we show this notification yet
               if(notification_feed[i].time <= time_diff)
-              { 
-                console.log("USER POST Time is Now READY!!!!");
+              {
+                //console.log("USER POST Time is Now READY!!!!");
 
                 //do stuff for notification read junks (there is no low or high anymore)
                 if ((notification_feed[i].notificationType == "read") && (user.transparency != "no"))
@@ -153,7 +153,7 @@ exports.getNotifications = (req, res) => {
                   //find element and add actor/update time
                   else
                   {
-                    
+
                     //if cohort actor, shift ahead of the line (to be seen first)
                     if (notification_feed[i].actor.class == "cohort")
                       {
@@ -169,12 +169,12 @@ exports.getNotifications = (req, res) => {
                   }
                 }//end of READ
 
-                //do stuff for notification LIKE 
+                //do stuff for notification LIKE
                 else if (notification_feed[i].notificationType == "like")
                 {
                   var likeKey = "like_"+ userPostID;
 
-                  console.log("Now in LIKE Area");
+                  //console.log("Now in LIKE Area");
 
                   //find element in our final data structure
                   let notifyIndex = _.findIndex(final_notify, function(o) { return o.key == likeKey; });
@@ -231,7 +231,7 @@ exports.getNotifications = (req, res) => {
             ###################################################################
             All things reference a User Reply (read like, etc)
             ###################################################################
-            
+
             else if (notification_feed[i].userReply >= 0)
             {
 
@@ -241,10 +241,10 @@ exports.getNotifications = (req, res) => {
               var user_reply = user.getUserReplyByID(userReplyID);
               console.log("USER REPLY NOTIFICATION");
               console.log("########Notification is UserReplyID "+notification_feed[i].userReply);
-              
+
               //!!!!!!!!@@@@@@@@@@@@@@@This needs to change ()
               var time_diff = Date.now() - user_reply.absTime;
-              
+
               //check if we show this notification yet
               if(notification_feed[i].time <= time_diff)
               {
@@ -280,7 +280,7 @@ exports.getNotifications = (req, res) => {
                   //find element and add actor/update time
                   else
                   {
-                    
+
                     if (notification_feed[i].actor.class == "cohort")
                       {
                         final_notify[notifyIndex].actors.unshift(notification_feed[i].actor);
@@ -334,7 +334,7 @@ exports.getNotifications = (req, res) => {
 
                 }//end of high READ
 
-                //do stuff for notification LIKE 
+                //do stuff for notification LIKE
                 else if (notification_feed[i].notificationType == "like")
                 {
                   var likeKey = "reply_like_"+ userReplyID;
@@ -380,19 +380,19 @@ exports.getNotifications = (req, res) => {
             ###################################################################
             All things reference an Actor Reply (read, like, etc)
             ###################################################################
-            
+
             else if (notification_feed[i].actorReply >= 0)
             {
 
               var actorReplyID = notification_feed[i].actorReply;
 
               var actor_reply = user.getActorReplyByID(actorReplyID);
-              
+
               var time_diff = Date.now() - actor_reply.absTime;
 
               console.log("ACTOR REPLY NOTIFICATION");
               console.log("########Notification is ActorReplyID "+notification_feed[i].actorReply);
-              
+
               //check if we show this notification yet
               if(notification_feed[i].time <= time_diff)
               {
@@ -428,7 +428,7 @@ exports.getNotifications = (req, res) => {
                   //find element and add actor/update time
                   else
                   {
-                    
+
                     if (notification_feed[i].actor.class == "cohort")
                       {
                         final_notify[notifyIndex].actors.unshift(notification_feed[i].actor);
@@ -483,7 +483,7 @@ exports.getNotifications = (req, res) => {
 
                 }//end of high READ
 
-                //do stuff for notification LIKE 
+                //do stuff for notification LIKE
                 else if ((notification_feed[i].notificationType == "like") && (user.notify != "no"))
                 {
                   var likeKey = "actor_reply_like_"+ actorReplyID;

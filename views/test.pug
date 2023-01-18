@@ -105,7 +105,7 @@ block content
           .ui.like.button
             i.heart.icon
             |  Like
-          a.ui.basic.red.left.pointing.label.count=2
+          a.ui.basic.red.left.pointing.label.count=8
       
       .content
         .ui.comments
@@ -124,16 +124,29 @@ block content
                 a.reply Reply
                 a.like Like
                 a.flag Flag
-            .ui.bottom.attached.negative.message
-              i.close.icon
-              .header
-                i.icon.red.flag
-                | Is this Cyberbullying?
-              br
-              button.positive.ui.button Yes
-              button.negative.ui.button No
-
-
+            .ui.success.icon.message
+              i.balance.scale.icon.float
+              .content
+                h3.header Your response has been recorded. Do you want to view the moderation policy?
+                button.ui.button Yes
+                button.ui.button No
+                
+          .comment
+            a.avatar
+              img(src='/profile_pictures/165.jpg')
+            .content
+              a.author Yalonda Carter
+              .metadata
+                span.date 1518667649625
+                .rating
+                  i.heart.icon
+                  |  5 Likes
+              .text
+                p Pretty good!!!
+              .actions
+                a.reply Reply
+                a.like Like
+                a.flag Flag
 
       .content
         //-.description(style="text-align:center;background:#E8E8E8")="How is Cassie Feeling?"
@@ -220,22 +233,35 @@ block content
           .ui.info.message
             .comment
               a.avatar
-                img(src='/profile_pictures/jaket.jpeg')
+                img(src='/profile_pictures/155.jpg')
               .content
-                a.author Jake Tyrel
+                a.author Emma hanson
                 .metadata
                   span.date 1518667649625
                   i.heart.icon
-                  |  3 Likes
+                  |  0 Likes
                 .text
-                  | This is gross, just like you!
+                  | when will you get it into your head that nobody likes your stupid ass.
                 .actions
                   a.reply Reply
                   a.like Like
                   a.flag Flag
-            .ui.header Our automated system has flagged this comment as harassment. Do you agree? 
-            a.ui.button(href='#') Yes
-            a.ui.button(href='#') No 
+
+            .ui.icon.message.ignore
+              i.users.icon.float
+              .content
+                h3.header(style="color:black;") Other users have flagged this comment as harassment. Do you agree?
+                button.ui.button Yes
+                button.ui.button No
+            //-br
+            //-.header
+              i.icon.balance.scale.large
+              | Other users have flagged this comment as harassment. Do you agree?
+            //-a.ui.button(href='#') Yes
+            //-a.ui.button(href='#') No 
+              
+            //-.ui.ignored.icon.info.message
+            
           //-.ui.info.message
             .ui.header Our automated system has flagged this comment as harassment. Do you agree? 
             a.ui.button(href='#') Yes
@@ -271,4 +297,3 @@ block content
             img.ui.avatar.image(src='/profile_pictures/image-18.png', name="Jane Doe")
           input(type='text', placeholder='Write to Jamie')
           i.big.send.link.icon
-

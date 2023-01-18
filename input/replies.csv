@@ -10,7 +10,7 @@ id,body,actor,reply,class,time
 9,nice shot 📷,fusionfeast,95,normal,05:01
 9999,Love it!,difrad,95,normal,05:10
 10,"oops, I meant burger...",lavenderrrrrr,95,normal,03:30
-11,this is such a lovely photo!,sweetpea,13,normal,05:20
+11,this is such a lovely photo!,lee.alexa,13,normal,05:20
 12,genius! 😂,localewis,66,normal,10:24
 13,I need to try this! I've always wanted to make ramen!,artisanalways,66,normal,10:30
 14,so smart! I still prefer the texture of actual ramen though...,breathe_in,66,normal,10:44
@@ -30,11 +30,11 @@ id,body,actor,reply,class,time
 29,these are gorgeous!,casssssssssie,8,normal,49:50
 30,How do you make soda? Inquiring (& soda-loving) minds want to know!,lavenderrrrrr,101,normal,51:01
 31,Well done! That's not something I've managed to do yet...,fusionfeast,101,normal,52:10
-32,So cool! How did you make it?,sweetpea,101,normal,53:30
+32,So cool! How did you make it?,coachmatthews,101,normal,53:30
 33,"For everyone asking how to make soda: The basic recipe is to fill a clean, empty plastic bottle most of the way with water, add the flavored simple syrup of your choice (yes, you must use real sugar!) and a pinch of yeast. Champagne yeast is ideal if you can find it, but regular bread yeast works too. Then screw the cap on and let it sit for 24 hours or so. Taste after that time to make sure it's bubbly. If it is, put it in the fridge so it doesn't explode. Then enjoy!",earthpulse,101,normal,55:30
 34,"I had donuts with lunch again today, in case anyone was wondering.. #onaroll #winning",tastyrobot,58,normal,37:50
 35,"Creamy here! Agree to disagree, I guess...",ancho-n-cayenne,40,normal,59:30
-36,"my mouth is literally watering, what an amazing flavor combo...",jupiterpride,162,normal,65:05
+36,"my mouth is literally watering, what an amazing flavor combo...",thisisalfie1998,162,normal,65:05
 37,"I love old cookbooks, they're always full of gems!",casssssssssie,132,normal,67:35
 38,That looks pretty gross hahah,MannyDL34,119,marginal,08:45
 39,pretty!,jackrussellmom,11,normal,02:45
@@ -45,7 +45,7 @@ id,body,actor,reply,class,time
 44,bro you eat too much ice cream,localewis,145,marginal,50:50
 45,umm... you didn't bother to ask what was in it?!?!,artisanalways,47,marginal,38:50
 46,be grateful that they even like broccoli!,coachmatthews,73,marginal,-11:08
-47,that looks disappointing. wings are only good if you eat too many imo,jupiterpride,92,marginal,39:50
+47,that looks disappointing. wings are only good if you eat too many imo,thisisalfie1998,92,marginal,39:50
 48,"you could probly make that at home for cheaper... these fancy bagel places are all $$$$, not worth it",mateoV,78,marginal,17:35
 49,oooh got an avocado-loving white girl over here lol,_aikira_,136,marginal,66:40
 50,i spy the kiddie popsicle things u can get at Target...,coachmatthews,64,marginal,70:19
@@ -53,10 +53,10 @@ id,body,actor,reply,class,time
 53,where do you even get something like that ,earthpulse,87,marginal,06:00
 54,yum yum id like to eat that with you ;),Jcole9,111,marginal,-05:00
 55,that sweet of you. My mom loves the homemade cakes I make her for her birthdays.,coachmatthews,137,marginal,24:00
-56,"stop posting this shit, nobody cares",bblueberryy,42,bullying,-12:39
-57,your life is sad. look at what you eat,bblueberryy,45,bullying,11:42
-58,when will you get it into your head that nobody likes your stupid ass.,bblueberryy,48,bullying,25:43
-59,"this photo is uglier than you, and thats saying something",bblueberryy,53,bullying,50:45
+56,"Is she pregnant? Or did she just gain 500 pounds? LOL #chubs #cheesecake",bblueberryy,41,unambig_flag,-00:03
+57,ummmm imma pass on ever eating this,bblueberryy,41,ambig_flag,-00:03
+58,when will you get it into your head that nobody likes your stupid ass.,jupiterpride,167,unambig_none,-00:02
+59,"this photo is uglier than you, and thats saying something",Smitty12,184,unambig_flag,24:03
 60,"Love pizza, zucchini not so much. Still might have to give it a shot sometime though",SamTHEMAN,7,normal,33:22
 61,so good....bread is one of biggest weaknesses. Carbs are the enemy though...,SamTHEMAN,15,normal,50:30
 62,My invite must have got lost in the mail...,SamTHEMAN,166,normal,22:34
@@ -65,10 +65,10 @@ id,body,actor,reply,class,time
 65,Adorable Cass! How do you find these places?,hockeymom101,50,normal,70:15
 67,Dinner of champions right there lol. ,hockeymom101,102,normal,68:34
 68,Yum. That would be a huge hit in our house...we can't keep enough ice cream in our fridge these days!,hockeymom101,96,normal,32:45
-69,AHAHA classic Murph...that guy can;t get enough of his nachos,Smitty12,185,normal,40:23
-70,Nothing compares to our Chowdaa from the east coast,Smitty12,156,normal,26:44
-71,Happy bday to your mom and all the best to the family mateo,Smitty12,137,normal,29:15
-72,cant wait for our tacofest in the summer,Smitty12,201,normal,26:12
+69,AHAHA classic Murph...that guy can;t get enough of his nachos,TimBJenkins,185,normal,40:23
+70,Nothing compares to our Chowdaa from the east coast,TimBJenkins,156,normal,26:44
+71,Happy bday to your mom and all the best to the family mateo,TimBJenkins,137,normal,29:15
+72,cant wait for our tacofest in the summer,TimBJenkins,201,normal,26:12
 73,im coming over....you cant have meatballs without me!!!,southerngirlCel,186,normal,70:12
 74,"i need the recipe, apricots are my fav lolol",southerngirlCel,97,normal,58:07
 75," look at you, so dedicated. miss you tons, keep killin it !",southerngirlCel,108,normal,30:30
@@ -146,7 +146,7 @@ id,body,actor,reply,class,time
 147,omg THIS LOOKS LIT,SnakeCharmer,28,normal,38:56
 148,There's a nice thai food near my home! we should go there together,SnakeCharmer,29,normal,59:17
 149,ew your mention of hair makes it look less nice lolll jk!,SnakeCharmer,35,normal,42:01
-150,looks nice for first try!,SnakeCharmer,41,normal,-10:23
+150,looks nice for first try!,SnakeCharmer,41,normal,-00:04
 151,Lesson learned ;),SnakeCharmer,60,normal,62:18
 152,The ribs look DELICISOUS! now i must get some as well...,john73,68,normal,69:02
 153,"I guess no matter how old we are, we all still have a sweet tooth!",john73,76,normal,64:37
@@ -222,16 +222,16 @@ id,body,actor,reply,class,time
 226,"I don't know if we'll ever get used to it, but I must admit, i quite enjoy all of the tasty looking photos",TomM41,182,normal,59:45
 227,Maybe three of them...,TomM41,253,normal,33:25
 228,Can't remember the last time I had a cinnamon roll...might be a time for a trip to Patsy's,TomM41,267,normal,31:58
-229,"Chicken Parm, dinner of champions!",TomM41,41,normal,-02:11
+229,"Chicken Parm, dinner of champions!",TomM41,41,normal,-00:05
 230,"That is quite the veteran play, potatoe chips work as well",TomM41,39,normal,12:59
 233,looks a lot this creamy rosee sauce I used to get from Saclps....I might have to go back to my roots and start making some more creative pasta dishes again,B.Mike,52,normal,62:12
 234,Donuts always were your kryptonite!,B.Mike,58,normal,44:21
 235,"Wow, looks interesting. Might have to find some of that to try myself",B.Mike,87,normal,52:11
 236,"I just got myself a press...I know bread is something I'm really trying to cut out, but nothing beats a good panini once in a while.",B.Mike,94,normal,01:13
-237,Aiellos still has nothing on Cimpanis if you ask me !,Smitty12,81,normal,2:31
-238,three meats? i look to call that the jackpot,Smitty12,77,normal,43:12
-239,Jackfruit? Never even heard of it,Smitty12,87,normal,52:11
-240,Seeing any kind of wings just makes me salivate,Smitty12,92,normal,37:43
+237,Aiellos still has nothing on Cimpanis if you ask me !,TimBJenkins,81,normal,2:31
+238,three meats? i look to call that the jackpot,TimBJenkins,77,normal,43:12
+239,Jackfruit? Never even heard of it,TimBJenkins,87,normal,52:11
+240,Seeing any kind of wings just makes me salivate,TimBJenkins,92,normal,37:43
 241,Looks amazing! I love eggplant parm!,Ataylor,84,normal,67:21
 242,"Sooo good, I'm jealous!",Ataylor,102,normal,17:31
 243,"It pays to be adventuous sometimes, even if it's just with your pizza",Ataylor,105,normal,67:14
@@ -253,15 +253,15 @@ id,body,actor,reply,class,time
 260,Just what this sickie 🤢 needs right now,kittycatbakes,56,normal,69:30
 261,That looks so good. Eating right is always hard on holiday whatever it is.,kittycatbakes,141,normal,46:59
 262,Beautiful!,kittycatbakes,28,normal,40:39
-263,So pretty!,kittycatbakes,41,normal,-16:19
+263,So pretty!,kittycatbakes,41,normal,-00:05
 264,Ohhhh this looks perfect!! Smooooooth,localewis,46,normal,05:05
 265,Oh my and yum..👍,localewis,58,normal,14:08
 266,delicious!,localewis,71,normal,42:34
 267,Yum!,localewis,88,normal,39:04
-268,Mouthwatering 😍😍,jupiterpride,86,normal,-10:21
-269,Wow this looks good!,jupiterpride,148,normal,14:59
-270,DREAMS!!!,jupiterpride,170,normal,02:30
-271,I want this for dinner,jupiterpride,158,normal,34:03
+268,Mouthwatering 😍😍,thisisalfie1998,86,normal,-10:21
+269,Wow this looks good!,thisisalfie1998,148,normal,14:59
+270,DREAMS!!!,thisisalfie1998,170,normal,02:30
+271,I want this for dinner,thisisalfie1998,158,normal,34:03
 272,I have to try it! It looks amazing 😍,breathe_in,173,normal,27:54
 273,😋waiting with my coffee and a spoon.,breathe_in,100,normal,27:30
 274,Heaven on a plate!,breathe_in,85,normal,60:12
@@ -275,7 +275,6 @@ id,body,actor,reply,class,time
 282,mmmm! Looks so yummy and perfect for a chilly night.,tastyrobot,73,normal,-12:35
 283,Ohhhh this looks perfect!! Smooooooth,tastyrobot,52,normal,48:30
 284,Oh yummmmm,jiruletheworld,162,normal,70:30
-285,"This looks SO delicious!! Check out our page for some tasty photos, too :)",jiruletheworld,175,normal,-03:30
 286,YUM! I’m making this tomorrow. Does the coconut milk have to be from a can or can it be from a carton (ie- Trader Joe’s coconut milk)? Thanks!,jiruletheworld,241,normal,10:02
 287,Yummm this is where the party is at,jiruletheworld,81,normal,-14:29
 289,This looks delicious! 😍,sweetietooth,96,normal,38:14
@@ -291,12 +290,11 @@ id,body,actor,reply,class,time
 299,😍😍my iron levels are screaming for this!,lucyinurdreams,77,normal,16:51
 300,Yum!! That looks so good,lucyinurdreams,107,normal,03:22
 301,MAKE $5000 PER WEEK WORKING FROM HOME. FIND OUT MORE!!!! http://www.5z8.info/_v4k6898ym_38--start,csmbx1,39,troll,-15:23
-302,HILLARY LIED ABOUT BENGHAZI!!!! she left americans to die. #lockherup,MrShazam,113,troll,24:26
 303,MAKE $5000 PER WEEK WORKING FROM HOME. FIND OUT MORE!!!! http://www.5z8.info/_v4k326ym_38--start,csmbx1,109,troll,48:05
 304,"
 muslims and queers are overrunning america (thanks to obama!) and are working together to destroy the purity of our Christian nation. ",JuniperQ,76,troll,58:53
-310,nice!,ancho-n-cayenne,184,normal,12:57
-311,❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️,Smitty12,268,normal,13:05
+310,nice!,ancho-n-cayenne,184,normal,24:02
+311,❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️❤️,TimBJenkins,268,normal,13:05
 312,what is it?,hockeymom101,257,normal,14:00
 313,lol way to make us all feel bad for being overweight.... eats another bite of ice cream,SamTHEMAN,249,normal,14:30
 314,i ordered a pizza,Marcymaniac,249,normal,14:31
@@ -327,9 +325,9 @@ muslims and queers are overrunning america (thanks to obama!) and are working to
 339,"oh shit, that is not a picture of the bread I made! that is the potatoes i took a picture of to post here. :|",chefricky,250,normal,29:22
 340,"lol, I was like--- that is not bread.",gwenfromtheblock,250,normal,29:54
 341,lol,fgonzalez,288,normal,30:20
-342,that meat does not look cooked????,Smitty12,217,normal,38:02
+342,that meat does not look cooked????,TimBJenkins,217,normal,38:02
 343,yummmy! fish in the oven is such a easy dinner. 🐟,Jcole9,2,cohort,-0:32
-344,what type of pizza?,Marcymaniac,167,normal,35:45
+344,what type of pizza?,Marcymaniac,167,normal,50:00
 345,give me dem wangs gurl,fusionfeast,112,normal,-0:45
 346,❤️❤️,lee.alexa,116,normal,-0:10
 347,Birthday cake? HAPPY BIRTHDAY! 🎂,BossmanRy,63,normal,35:32
@@ -342,5 +340,7 @@ muslims and queers are overrunning america (thanks to obama!) and are working to
 531,Chuncky all the way of course!,B.Mike,40,normal,60:11
 543,what the hell are funeral potatoes?,SamTHEMAN,71,normal,33:40
 544,LOVE IT!!!!,_aikira_,2,cohort,-0:27
-545,just like a fancy ass cheese pizza,jake_turk,167,normal,35:47
+545,just like a fancy ass cheese pizza,jake_turk,167,normal,50:05
 546,I WANT THIS CAKE,southerngirlCel,63,normal,35:20
+547,"plzzz don’t ever cook this for me 😂",Smitty12,184,ambig_flag,24:03
+548,"Everyone hates you",sweetpea,175,unambig_none,24:04
