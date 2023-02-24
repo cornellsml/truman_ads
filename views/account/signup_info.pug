@@ -1,16 +1,15 @@
 extends ../ui_layout
 
 block content
-  
-  .sixteen.wide.column
-    h3.ui.header Tell Us A Little More About Yourself
+  .twelve.wide.computer.tablet.sixteen.wide.mobile.column(style="margin-top: 2em; margin-bottom: 2em;")
+    h2(style="text-align: center;") Tell Us A Little More About Yourself
 
     form.ui.form(action='/account/signup_info_post', method='POST', enctype='multipart/form-data')
       input(type='hidden', name='_csrf', value=_csrf)
       .field.image-upload
-        //- label.col-sm-3.control-label Profile Picture (Click to Change)
-        //- img(src=user.gravatar(), class='profile', width='100', height='100')
-        label(for='picinput')="Profile Picture (Click to Change)"
+        p(style="font-weight: bold; font-size: medium; margin-bottom: 0.2em") Profile Picture 
+          span(style="font-weight: normal") (Click to Change)
+        label(for='picinput', style="width: fit-content")
           if user.profile.picture
             img#imgInp.ui.small.image(src='/user_post/'+user.profile.picture)
           else
@@ -27,6 +26,23 @@ block content
         label(for='bio') Bio
         textarea(rows='2', name='bio', id='bio')=user.profile.bio
       .ui.buttons
-        button.ui.positive.button(type='submit') Save
+        button.ui.large.positive.button(type='submit') Save
         .or
-        button.ui.button.skip Skip
+        button.ui.large.button.com(type='button') Skip
+  
+  script. 
+    //- Skip Button
+    $('button.ui.button.com')
+      .on('click', function() {
+        window.location.href = '/com';
+      });
+
+block styles 
+  style. 
+    label {
+      font-size: medium !important;
+    }
+
+    .inline.fields .field {
+      padding-top: 10px !important;
+    }

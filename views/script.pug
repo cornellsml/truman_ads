@@ -1,12 +1,14 @@
-extends ui_layout_no
-  
+extends ui_layout
+
+block styles 
+  link(type='text/css', rel='stylesheet', href='/public/css/script.css')
+
 block content
-  
-  //-Change this URI to a CDN you are using for Photos
+  //- TODO: Change this URI to a CDN you are using for Photos
   -var cdn = "";
   -var currentDay = "";
   -var dateNow = Date.now();
-  
+
   .computer.only.tablet.only.four.wide.column 
     .ui.card
       .image
@@ -18,13 +20,14 @@ block content
         a.header(href='/me')= user.profile.name || user.username || user.id
         .meta="@"+user.username
         .description=user.profile.bio
-        .description
+        .description(style="margin-top: 5px;")
           if user.profile.location
             i.marker.icon
             span=user.profile.location
       .one.ui.bottom.attached.icon.buttons
-          button.ui.editprofile.button(data-tooltip='Update Your Profile', data-position='bottom left')
-            i.write.icon
+        button.ui.editprofile.button(data-tooltip='Update Your Profile', data-position='bottom left')
+          i.write.icon
+    p #{user.interest}
 
   #loading.eight.wide.computer.ten.wide.tablet.sixteen.wide.mobile.column
     img.ui.centered.small.image(src='/public/heart.svg')
@@ -40,21 +43,18 @@ block content
           img.ui.avatar.image(src=user.gravatar(60))
       input(type='text', placeholder='Share your meal')
       i.big.photo.link.icon
-  
     each val in script
-      //- create a card for each post in val (if by user make the card a little different)
       //- if val.relativeTime - then post came from user_post (so user post, user reply to actor reply to user post)
+      //- This is a User made post
       if val.relativeTime
-        -var u_class;
-        -if (val.actorAuthor) {u_class = "actorReply"}
-        -else if (val.reply) {u_class = "userReply"}
-        -else {u_class = "userPost"}
+        -const u_class="userPost";
+        //- -if (val.actorAuthor) {u_class = "actorReply"}
+        //- -else if (val.reply) {u_class = "userReply"}
+        //- -else {u_class = "userPost"}
+
         .ui.fluid.card(u_postID=val.id, type=u_class, postID=val.postID)
-          
-          //- This is a User made post
           .content
-            .right.floated.time.meta=((Date.now() - (Date.now() - val.absTime)))
-            |  
+            .right.floated.time.meta=(val.absTime.getTime())
             a.ui.avatar.image(href='/me')
               if user.profile.picture
                 img(src='/user_post/'+user.profile.picture)
@@ -70,23 +70,19 @@ block content
             .ui.reply.button(tabindex='0')
               i.reply.icon
               |  Reply
-            if val.liked
-              .ui.red.like.button
+            .ui.labeled.button(tabindex='0')
+              .ui.like.button(class=val.liked ? "red" : null)
                 i.heart.icon
                 |  Like
-            else
-              .ui.like.button
-                i.heart.icon
-                |  Like
-          if val.comments.length > 0
+              a.ui.basic.red.left.pointing.label.count=val.likes        
+          if val.comments.filter(comment => comment.absTime < Date.now()).length > 0
             .content
               .ui.comments
                 each comment in val.comments
-                  //-IF this comment is USER made, do this
-                  if (user.createdAt.getTime() + comment.time) < Date.now()
+                  if comment.absTime < Date.now()
                     if !comment.flagged
+                      //-IF this comment is USER made, do this
                       if comment.new_comment
-                        -console.log("New COMMENT AREA");
                         .comment(commentID=comment.commentID)
                           a.avatar.image(href='/me')
                             if user.profile.picture
@@ -96,23 +92,14 @@ block content
                           .content
                             a.author(href='/me')=user.profile.name || user.username || user.id
                             .metadata
-                              span.date=(user.createdAt.getTime() + comment.time)
+                              span.date=(comment.absTime.getTime())
                               .rating
-                                if comment.liked
-                                  i.red.heart.icon
-                                  span.num=comment.likes
-                                  | Likes 
-                                else
-                                  i.heart.icon
-                                  span.num=comment.likes
-                                  |  Likes
+                                i.heart.icon(class=comment.liked ? "red" : null)
+                                span.num=comment.likes
+                                |  Likes
                             .text=comment.body
                             .actions
-                              if comment.liked
-                                a.red.like.comment Like
-                              else
-                                a.like.comment Like
-                              a.flag.comment Flag
+                              a.like.comment(class=comment.liked ? "red" : null) !{comment.liked ? "Unlike" : "Like"}
                       //- Else this is a normal comment from the script
                       else
                         .comment(commentID=comment.commentID)
@@ -122,24 +109,15 @@ block content
                           .content
                             a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
                             .metadata
-                              span.date=(user.createdAt.getTime() + comment.time)
+                              span.date=(comment.absTime.getTime())
                               .rating
-                                if comment.liked
-                                  i.red.heart.icon
-                                  span.num=comment.likes
-                                  | Likes 
-                                else
-                                  i.heart.icon
-                                  span.num=comment.likes
-                                  |  Likes
+                                i.heart.icon(class=comment.liked ? "red" : null)
+                                span.num=comment.likes
+                                |  Likes
                             .text=comment.body
                             .actions
-                              if comment.liked
-                                a.red.like.comment Like
-                              else
-                                a.like.comment Like
+                              a.like.comment(class=comment.liked ? "red" : null) !{comment.liked ? "Unlike" : "Like"}
                               a.flag.comment Flag
-
           .extra.content
             .ui.fluid.left.labeled.right.icon.input
               .ui.label
@@ -150,35 +128,27 @@ block content
               input.newcomment(type='text', placeholder='Write a Comment')
               i.big.send.link.icon
 
-      //-THIS is for posts by Actors, not the USER
+      //- Actor Post
       else
-        .ui.fluid.card.dim(postID=val.id, state=val.state || 'unread', type='actor', actor_un = val.actor.username, actor_name = val.actor.profile.name, actor_pic = val.actor.profile.picture)
+        .ui.fluid.card.dim(postID=val.id, state=val.state, type='actor', actor_un = val.actor.username, actor_name = val.actor.profile.name, actor_pic = val.actor.profile.picture)
           //- dimmer DIV for flagging
           .ui.dimmer.flag
-                .content
-                  .center
-                    h2.ui.inverted.icon.header
-                      i.red.flag.icon
-                      |  You&apos;ve flagged this!
-                      h3.ui.inverted.header
-                        span="The admins will review this post further. We are sorry you had this experience."
+            .content
+              .center
+                h2.ui.inverted.icon.header
+                  i.red.flag.icon
+                  |  You've flagged this!
+                  h3.ui.inverted.header
+                    span="The admins will review this post further. We are sorry you had this experience."
           //- Normal Base Post
           .content
             .right.floated.time.meta= (user.createdAt.getTime() + val.time)
-            |  
-            //-a(href='/user/'+val.actor.username)
-              img.ui.avatar.image(src=cdn+'/profile_pictures/'+val.actor.profile.picture)
-              span=val.actor.profile.name
             a(href='/user/'+val.actor.username)     
               img.ui.avatar.image(src=cdn+"/profile_pictures/"+val.actor.profile.picture)
               span=val.actor.profile.name
-          //-div(style="position: relative; z-index: 1;")
-            img(src="image.png" style="position: absolute; z-index: 2;")
-            span#overlay_text(style="position: relative; top: -10px; z-index: 3;") OVERLAY
-          .img.post
-            //-img.post(src="/"+val.picture)
+          .img.post.image
             //img(src='/public/picture.svg', data-src="/post_pictures/"+val.picture, style="max-width:100%;width:100%;")
-            img(src=cdn+"/post_pictures/"+val.picture, style="max-width:100%;width:100%;")
+            img(src=cdn+"/post_pictures/"+val.picture, style="max-width:100%; width:100%;")
           .content
             .description=val.body
             .myTimer.hidden 0
@@ -189,27 +159,19 @@ block content
             .ui.flag.button(tabindex='0')
               i.flag.icon
               |  Flag
-            if val.like
-              .ui.labeled.button(tabindex='0')
-                .ui.red.like.button
-                  i.heart.icon
-                  |  Like
-                a.ui.basic.red.left.pointing.label.count=val.likes
-            else
-              .ui.labeled.button(tabindex='0')
-                .ui.like.button
-                  i.heart.icon
-                  |  Like
-                a.ui.basic.red.left.pointing.label.count=val.likes
-          if val.comments.length > 0
+            .ui.labeled.button(tabindex='0')
+              .ui.like.button(class=val.like? "red": null)
+                i.heart.icon
+                |  Like
+              a.ui.basic.red.left.pointing.label.count=val.likes
+          if val.comments.filter(comment => user.createdAt.getTime() + comment.time < Date.now()).length > 0
             .content
               .ui.comments
                 each comment in val.comments
-                  //-IF this comment is USER made, do this
                   if (user.createdAt.getTime() + comment.time) < Date.now()
+                    //- Comment is user-made
                     if comment.new_comment
-                      -console.log("New COMMENT AREA");
-                      .comment(commentID=comment.new_comment_id)
+                      .comment(commentID=comment.commentID)
                         a.avatar.image(href='/me')
                           if user.profile.picture
                             img(src='/user_post/'+user.profile.picture)
@@ -220,171 +182,29 @@ block content
                           .metadata
                             span.date=(user.createdAt.getTime() + comment.time)
                             .rating
-                              i.heart.icon
-                              span.num=0
+                              i.heart.icon(class=comment.liked ? "red" : null)
+                              span.num=comment.likes
                               |  Likes
                           .text=comment.body
                           .actions
-                            a.like.comment Like
-                            a.flag.comment Flag
+                            a.like.comment(class=comment.liked ? "red" : null ) !{comment.liked ? "Unlike" : "Like"}
                     //- Else this is a normal comment from the script
                     else
-                      if (((comment.class === "unambig_flag") && (user.bully_group === "unambig")) || ((comment.class === "ambig_flag") && (user.bully_group === "ambig")))
-                        if (((dateNow - user.createdAt) <= 86400000) && (user.day1Response === "none")) || (((dateNow - user.createdAt) > 86400000) && (user.day2Response == "none"))
-                          //-This is a bullying actor comment that requires content moderation messaging
-                          .ui.info.message
-                            .comment(commentID=comment.id)
-                              a.avatar(href='/user/'+comment.actor.username)
-                                //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
-                                img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
-                              .content
-                                a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
-                                .metadata
-                                  span.date=(user.createdAt.getTime() + comment.time)
-                                  .rating
-                                    if comment.liked
-                                      i.red.heart.icon
-                                      span.num=comment.likes
-                                      |  Likes 
-                                    else
-                                      i.heart.icon
-                                      span.num=comment.likes
-                                      |  Likes
-                                .text=comment.body
-                                .actions
-                                  if comment.liked
-                                    a.red.like.comment Like
-                                  else
-                                    a.like.comment Like
-                                  a.flag.comment Flag
-                            //-Customizing the message based on the flag_group the current user is in 
-                            if(user.flag_group === "none")
-                              .ui.icon.message.ignore
-                                .ui.disabled.inverted.dimmer
-                                  .ui.indeterminate.loader 
-                                i.flag.icon.float
-                                .content
-                                  .ui.header(style="color:black;") This comment has been flagged as harassment. Do you agree? 
-                                  a.ui.agree.button Yes
-                                  a.ui.disagree.button No 
-                            if(user.flag_group === "ai")
-                              .ui.icon.message.ignore
-                                .ui.disabled.inverted.dimmer
-                                  .ui.indeterminate.loader 
-                                i.laptop.icon.float
-                                .content
-                                  .ui.header(style="color:black;") Our automated system has flagged this comment as harassment. Do you agree? 
-                                  a.ui.agree.button Yes
-                                  a.ui.disagree.button No 
-                            if(user.flag_group === "user")  
-                              .ui.icon.message.ignore
-                                .ui.disabled.inverted.dimmer
-                                  .ui.indeterminate.loader 
-                                i.users.icon.float
-                                .content
-                                  .ui.header(style="color:black;") Other users have flagged this comment as harassment. Do you agree? 
-                                  a.ui.agree.button Yes
-                                  a.ui.disagree.button No 
-                                  
-                          .comment.modRespondedNo(commentID=comment.id style="display:none;")
-                            a.avatar(href='/user/'+comment.actor.username)
-                              //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
-                              img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
-                            .content
-                              a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
-                              .metadata
-                                span.date=(user.createdAt.getTime() + comment.time)
-                                .rating
-                                  if comment.liked
-                                    i.red.heart.icon
-                                    span.num=comment.likes
-                                    |  Likes 
-                                  else
-                                    i.heart.icon
-                                    span.num=comment.likes
-                                    |  Likes
-                              .text=comment.body
-                              .actions
-                                if comment.liked
-                                  a.red.like.comment Like
-                                else
-                                  a.like.comment Like
-                                a.flag.comment Flag
-                                //-Customizing the message based on the flag_group the current user is in 
-                            .ui.success.icon.message
-                              .ui.disabled.inverted.dimmer
-                                .ui.indeterminate.loader 
-                              i.balance.scale.icon.float
-                              .content
-                                h3.header Your response has been recorded. Do you want to view the moderation policy?
-                                a.ui.modInfo.button Yes
-                                a.ui.noModInfo.button No
-                                
-                          .comment.modRespondedYes(commentID=comment.id style="display:none;")
-                            .ui.success.icon.message
-                              .ui.disabled.inverted.dimmer
-                                .ui.indeterminate.loader 
-                              i.balance.scale.icon.float
-                              .content
-                                h3.header Your response has been recorded. Do you want to view the moderation policy?
-                                a.ui.modInfo.button Yes
-                                a.ui.noModInfo.button No
-                        else 
-                          .comment(commentID=comment.id)
-                            a.avatar(href='/user/'+comment.actor.username)
-                              //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
-                              img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
-                            .content
-                              a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
-                              .metadata
-                                span.date=(user.createdAt.getTime() + comment.time)
-                                .rating
-                                  if comment.liked
-                                    i.red.heart.icon
-                                    span.num=comment.likes
-                                    |  Likes 
-                                  else
-                                    i.heart.icon
-                                    span.num=comment.likes
-                                    |  Likes
-                              .text=comment.body
-                              .actions
-                                if comment.liked
-                                  a.red.like.comment Like
-                                else
-                                  a.like.comment Like
-                                a.flag.comment Flag
-                      else if ((comment.class === "unambig_flag" && user.bully_group === "ambig") || (comment.class === "ambig_flag" && user.bully_group === "unambig"))
-                        //-do nothing, dont show the message. Only show the message that matches the bully group. 
-                          This should just be a safeguard since the "wrong" comment shouldn't even be spliced into the feed to begin with. 
-                      else
-                        //-.ui.info.message
-                        //-This is a regular actor comment with no special messaging
-                        .comment(commentID=comment.id)
-                          a.avatar(href='/user/'+comment.actor.username)
-                            //-img(src=cdn+'/profile_pictures/'+comment.actor.profile.picture)                       
-                            img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
-                          .content
-                            a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
-                            .metadata
-                              span.date=(user.createdAt.getTime() + comment.time)
-                              .rating
-                                if comment.liked
-                                  i.red.heart.icon
-                                  span.num=comment.likes
-                                  |  Likes 
-                                else
-                                  i.heart.icon
-                                  span.num=comment.likes
-                                  |  Likes
-                            .text=comment.body
-                            .actions
-                              if comment.liked
-                                a.red.like.comment Like
-                              else
-                                a.like.comment Like
-                              a.flag.comment Flag
-
+                      .comment(commentID=comment.id)
+                        a.avatar(href='/user/'+comment.actor.username)                     
+                          img(src=cdn+"/profile_pictures/"+comment.actor.profile.picture)
+                        .content
+                          a.author(href='/user/'+comment.actor.username)=comment.actor.profile.name
+                          .metadata
+                            span.date=(user.createdAt.getTime() + comment.time)
+                            .rating
+                              i.heart.icon(class=comment.liked ? "red" : null)
+                              span.num=comment.likes
+                              |  Likes
+                          .text=comment.body
+                          .actions
+                            a.like.comment(class=comment.liked ? "red" : null ) !{comment.liked ? "Unlike" : "Like"}
+                            a.flag.comment Flag
           .extra.content
             .ui.fluid.left.labeled.right.icon.input
               .ui.label
@@ -394,77 +214,34 @@ block content
                   img.ui.avatar.image(src=user.gravatar(60), name=user.profile.name || user.username || user.id)            
               input.newcomment(type='text', placeholder='Write a Comment')
               i.big.send.link.icon
-
     .ui.fluid.card
       .content
         .description
         |  End of Posts for the last 24 hours.
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    br
-    .ui.tiny.post.modal()
-      i.close.icon
-      .header Add a New Post
-      .content
-        form#postform.ui.feed.form(action='/post/new', method='POST', enctype='multipart/form-data')
-          input(type='hidden', name='_csrf', value=_csrf)
-          .field
-            textarea(rows='2', placeholder='Share your meal', name='body')
-          .field.image-upload
-            label(for='picinput')
-              .image.content
-                img#imgInp.ui.fluid.image(src='/public/photo-camera.svg')
-            //-input#picinput(type='file', accept='image/*', capture='camera', name='picinput')
-            input#picinput(type='file', accept='image/*', name='picinput')
-          .ui.error.message
-      .actions
-        input.ui.green.button(type='submit', name="foo", value='Submit', form='postform')
+  .computer.only.tablet.only.four.wide.column
+    
+  .ui.tiny.post.modal()
+    i.close.icon
+    .header Add a New Post
+    .scrolling.content
+      form#postform.ui.feed.form(action='/post/new', method='POST', enctype='multipart/form-data')
+        input(type='hidden', name='_csrf', value=_csrf)
+        .field
+          textarea(rows='2', placeholder='Share your meal', name='body')
+        .field.image-upload
+          label(for='picinput')
+            .image.content
+              img#imgInp.ui.fluid.image(src='/public/photo-camera.svg')
+          input#picinput(type='file', accept='image/*', name='picinput')
+    .actions
+      input.ui.green.button(type='submit', name="foo", value='Submit', form='postform')
           
 block scripts
   script().
+    const user = !{JSON.stringify(user)};
     $(window).on('load', function(){
-      $('.ui.agree.button').closest('.ui.fluid.card.dim').css({
-        //'box-shadow':'0 0 5px 5px #FF0000',
-        'background-color':'rgba(255, 0, 0, 0.2)'
-      });
-      $('.ui.agree.button').closest('.info.message').css('box-shadow','0 0 5px 5px #FF0000');
-    });
-    
-    if(window.performance.getEntriesByType("navigation")[0].type === "back_forward"){
-      window.location.reload(true);
-    }
-    
-    
+      if(window.performance.getEntriesByType("navigation")[0].type === "back_forward"){
+        window.location.reload(true);
+    }});
+  script(src='/public/js/script.js')
+  script(src='/public/js/postFunctionalities.js')
