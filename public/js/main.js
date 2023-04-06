@@ -3,26 +3,41 @@ $('#content').hide();
 $('#loading').show();
 
 $(window).on("load", function() {
+    //add humanized time to all posts
+    $('.right.floated.time.meta, .date').each(function() {
+        var ms = parseInt($(this).text(), 10);
+        let time = new Date(ms);
+        $(this).text(humanized_time_span(time));
+    });
+
     //close loading dimmer on load
     $('#loading').hide();
     $('#content').attr('style', 'block');
     $('#content').fadeIn('slow');
 
-    //Semantic UI: closes messages from flash message
+    //Semantic UI: function for closing messages
     $('.message .close').on('click', function() {
         $(this).closest('.message').transition('fade');
     });
-    //Semantic UI: make checkbox work
+    //Semantic UI: function to make checkbox work
     $('.ui.checkbox').checkbox();
 
-    //check bell display (and make red if there are notifications)
-    if (!(top.location.pathname === '/login' || top.location.pathname === '/signup')) {
-        $.getJSON("/bell", function(json) {
-            if (json.result) {
-                $("i.big.alarm.icon").replaceWith('<i class="big icons"><i class="red alarm icon"></i><i class="corner yellow lightning icon"></i></i>');
-            }
+    if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        $.post("/pageLog", {
+            path: window.location.pathname,
+            _csrf: $('meta[name="csrf-token"]').attr('content')
         });
-    }
+        if (window.location.pathname !== '/notifications') {
+            setInterval(function() {
+                // method to be executed;
+                $.getJSON("/notifications", { bell: true }, function(json) {
+                    if (json.count != 0) {
+                        $("i.big.alarm.icon").replaceWith('<i class="big icons"><i class="red alarm icon"></i><i class="corner yellow lightning icon"></i></i>');
+                    }
+                });
+            }, 5000);
+        }
+    };
 
     //Picture Preview on Image Selection (Used for: uploading new post, updating profile)
     function readURL(input) {
@@ -37,13 +52,6 @@ $(window).on("load", function() {
 
     $("#picinput").change(function() {
         readURL(this);
-    });
-
-    //add humanized time to all posts
-    $('.right.floated.time.meta, .date').each(function() {
-        var ms = parseInt($(this).text(), 10);
-        let time = new Date(ms);
-        $(this).text(humanized_time_span(time));
     });
 
     //Button to go to feed

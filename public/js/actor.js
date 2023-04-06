@@ -7,12 +7,11 @@ $(window).on("load", function() {
     $('.ui.small.report.modal')
         .modal({
             onHidden: function(e) {
-                console.log(e)
                 $(".ui.small.report.modal input[type=radio]").each(function() {
                     $(this).prop('checked', false);
                 });
                 $(".ui.small.report.modal input.ui.green.button").addClass('disabled');
-                if (blocked) {
+                if (isBlocked) {
                     //Modal for Blocked Users
                     $('.ui.small.basic.blocked.modal').modal('show');
                 }
@@ -32,7 +31,7 @@ $(window).on("load", function() {
             $('.second.modal').modal('hide others');
         },
         onHidden: function(modal) {
-            if (blocked) {
+            if (isBlocked) {
                 //Modal for Blocked Users
                 $('.ui.small.basic.blocked.modal').modal('show').removeClass('hidden');
             }
@@ -52,7 +51,7 @@ $(window).on("load", function() {
                 var username = $('button.ui.button.block').attr("username");
                 $.post("/user", { unblocked: username, _csrf: $('meta[name="csrf-token"]').attr('content') })
                     .then(function() {
-                        blocked = false;
+                        isBlocked = false;
                     });
             }
         });
@@ -72,17 +71,16 @@ $(window).on("load", function() {
     //REPORT Actor Form
     $('form#reportform').submit(function(e) {
         e.preventDefault();
-        reported = true;
+        isReported = true;
         $.post($(this).attr('action'), $(this).serialize(), function(res) {
             $('.ui.small.basic.blocked.modal').modal('hide');
-            console.log("POST completed")
         });
     });
 
     //BLOCK Actor button
     $('button.ui.button.block').on('click', function() {
         var username = $(this).attr("username");
-        blocked = true;
+        isBlocked = true;
         $.post("/user", { blocked: username, _csrf: $('meta[name="csrf-token"]').attr('content') });
 
         //Modal for Blocked Users
@@ -90,7 +88,7 @@ $(window).on("load", function() {
     });
 
     //Actor is already blocked
-    if (blocked) {
+    if (isBlocked) {
         //Modal for Blocked Users
         $('.ui.small.basic.blocked.modal').modal('show');
     }
