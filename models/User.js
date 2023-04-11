@@ -105,8 +105,7 @@ const userSchema = new mongoose.Schema({
     feedAction: [new Schema({
         post: { type: Schema.ObjectId, ref: 'Script' },
         postClass: String, //indicate if the post action is done on is Ad/Normal. TODO
-        rereadTimes: Number, //number of times post has been viewed by user. TODO
-        startTime: { type: Number, default: 0 }, //always the newest startTime (full date in ms). TODO
+        rereadTimes: { type: Number, default: 0 }, //number of times post has been viewed by user. TODO
 
         liked: { type: Boolean, default: false }, //has the user liked it?
         flagged: { type: Boolean, default: false }, // has the user flagged it?
@@ -115,7 +114,7 @@ const userSchema = new mongoose.Schema({
         flagTime: [Date], //absoluteTimes of times user has flagged the post
         hidden: { type: Boolean, default: false }, //has the user hidden it? Used for Ads only.
         hideTime: [Date], //absoluteTimes of times user has hidden the post
-        readTime: [Date], //how long the user spent looking at the post (does not record times less than 1.5 seconds). TODO
+        readTime: [Number], //in milliseconds, how long the user spent looking at the post (we do not record times less than 1.5 seconds and more than 24 hrs)
 
         comments: [new Schema({
             comment: { type: Schema.ObjectId }, //ID Reference for Script post comment

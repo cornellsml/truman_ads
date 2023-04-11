@@ -353,8 +353,6 @@ exports.postUpdateFeedAction = (req, res, next) => {
             var cat = {
                 post: req.body.postID,
                 // TODO: postClass: use for ads vs. regular posts
-                rereadTimes: 0,
-                startTime: req.body.start || 0
             };
             // add new post into correct location
             feedIndex = user.feedAction.push(cat) - 1;
@@ -473,24 +471,18 @@ exports.postUpdateFeedAction = (req, res, next) => {
                 user.feedAction[feedIndex].hideTime.push(hide);
                 user.feedAction[feedIndex].hidden = true;
             }
-
-            //NEW VIEW TIME APPROACH POSTS
-            //array of viewedTimes is empty and we have a new VIEW event
-            // else if ((!user.feedAction[feedIndex].readTime) && req.body.viewed) {
-            //     let viewedTime = req.body.viewed;
-            //     user.feedAction[feedIndex].read = true;
-            //     user.feedAction[feedIndex].readTime = [viewedTime];
-            // }
-
-            // //Already have a viewedTime Array, New VIEW event, need to add this to readTime array
-            // else if ((user.feedAction[feedIndex].readTime) && req.body.viewed) {
-            //     let viewedTime = req.body.viewed;
-            //     //console.log("%%%%%Add new Read Time: ", read);
-            //     user.feedAction[feedIndex].read = true;
-            //     user.feedAction[feedIndex].readTime.push(viewedTime);
-            // } else {
-            //     console.log("Got a POST that did not fit anything. Possible Error.")
-            // }
+            //Read event 
+            else if (req.body.viewed) {
+                let view = req.body.viewed;
+                if (!user.feedAction[feedIndex].readTime) {
+                    user.feedAction[feedIndex].readTime = [view];
+                } else {
+                    user.feedAction[feedIndex].readTime.push(view);
+                }
+                user.feedAction[feedIndex].rereadTimes++;
+            } else {
+                console.log('Something in feedAction went crazy. You should never see this.');
+            }
         }
 
         user.save((err) => {

@@ -64,76 +64,72 @@ $(window).on("load", function() {
         window.location.href = '/account';
     });
 
-    //////TESTING
+    // Track how long a post is on the screen (borders are defined by image)
     $('.ui.fluid.card .img.post').visibility({
         once: false,
         continuous: false,
         observeChanges: true,
         //throttle:100,
         initialCheck: true,
+        offset: 50,
 
-        //handling scrolling down like normal
-        onBottomVisible: function(calculations) {
-            var startTime = Date.now();
-            $(this).siblings(".content").children(".myTimer").text(startTime);
-            if (calculations.topVisible) { //then we are scrolling DOWN normally and this is the START time
+        //Handling scrolling down like normal
+        //Called when bottomVisible turns true (bottom of a picture is visible): bottom can enter from top or bottom of viewport
+        onBottomVisible: function(element) {
+            // Bottom of picture enters from bottom (scrolling down the feed; as normal)
+            if (element.topVisible) { // Scrolling Down AND entire post is visible on the viewport 
+                var startTime = Date.now();
                 $(this).siblings(".content").children(".myTimer").text(startTime);
-            } else { //then we are scrolling UP and this event does not matter!
+            } else { //Scrolling up and this event does not matter, since entire photo isn't visible anyways.
             }
         },
 
-        onTopPassed: function(calculations) {
-            var endTime = Date.now();
-            var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
-            var totalViewTime = endTime - startTime; //TOTAL TIME HERE
-            //POST HERE
-            var parent = $(this).parents(".ui.fluid.card");
-            var postID = parent.attr("postID");
-            //console.log(postID);
-            //Don't record it if it's longer than 24 hours, do this check because refresh causes all posts to be marked as "viewed" for 49 years.(???)
-            if (totalViewTime < 86400000) {
+        //Element's top edge has passed top of the screen (disappearing); happens only when Scrolling Down
+        onTopPassed: function(element) {
+            // If user viewed it for less than 24 hours, but more than 1.5 seconds (just in case)
+            if (totalViewTime < 86400000 && totalViewTime > 1500 && startTime > 0) {
+                var endTime = Date.now();
+                var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
+                var totalViewTime = endTime - startTime; //TOTAL TIME HERE
+
+                var parent = $(this).parents(".ui.fluid.card");
+                var postID = parent.attr("postID");
                 $.post("/feed", {
                     postID: postID,
                     viewed: totalViewTime,
                     _csrf: $('meta[name="csrf-token"]').attr('content')
                 });
             }
-            //console.log("Total time: " + totalViewTime);
-            //console.log($(this).siblings(".content").children(".description").text());
-        },
-        //end handling downward scrolling
-
-        //handling scrolling back upwards
-        onTopPassedReverse: function(calculations) {
-            var startTime = Date.now();
-            $(this).siblings(".content").children(".myTimer").text(startTime);
         },
 
-        onBottomVisibleReverse: function(calculations) {
-            if (calculations.bottomPassed) {
+        //Handling scrolling up
+        //Element's top edge has passed top of the screen (appearing); happens only when Scrolling Up
+        onTopPassedReverse: function(element) {
+            if (element.bottomVisible) { // Scrolling Up AND entire post is visible on the viewport 
+                var startTime = Date.now();
+                $(this).siblings(".content").children(".myTimer").text(startTime);
+            }
+        },
 
-            } else {
-                //eND TIME FOR SCROLLING UP
+        // Called when bottomVisible turns false (exits from top or bottom)
+        onBottomVisibleReverse: function(element) {
+            if (element.bottomPassed) { //Scrolling Down, disappears on top; this event doesn't matter (since it should have already been logged)
+            } else { // False when Scrolling Up (the bottom of photo exits screen.)
                 var endTime = Date.now();
                 var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
-                var totalViewTime = endTime - startTime; //TOTAL TIME HERE
-                //POST HERE
+                var totalViewTime = endTime - startTime;
+
                 var parent = $(this).parents(".ui.fluid.card");
                 var postID = parent.attr("postID");
-                //console.log("PostID: " + postID);
-                //console.log(postID);
-                //Don't record it if it's longer than 24 hours, do this check because refresh causes all posts to be marked as "viewed" for 49 years. (???)
-                if (totalViewTime < 86400000) {
+                // If user viewed it for less than 24 hours, but more than 1.5 seconds (just in case)
+                if (totalViewTime < 86400000 && totalViewTime > 1500 && startTime > 0) {
                     $.post("/feed", {
                         postID: postID,
                         viewed: totalViewTime,
                         _csrf: $('meta[name="csrf-token"]').attr('content')
-                    });
+                    })
                 }
-                //console.log("Total time: " + totalViewTime);
-                //console.log($(this).siblings(".content").children(".description").text());
             }
-            //end handling scrolling back updwards
         }
     });
 });
