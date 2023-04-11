@@ -353,91 +353,6 @@ exports.postPageLog = (req, res, next) => {
 };
 
 /**
- * GET /reset/:token
- * Reset Password page.
- */
-exports.getReset = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return res.redirect('/');
-    }
-    User
-        .findOne({ passwordResetToken: req.params.token })
-        .where('passwordResetExpires').gt(Date.now())
-        .exec((err, user) => {
-            if (err) { return next(err); }
-            if (!user) {
-                req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
-                return res.redirect('/forgot');
-            }
-            res.render('account/reset', {
-                title: 'Password Reset'
-            });
-        });
-};
-
-/**
- * POST /reset/:token
- * Process the reset password request.
- */
-exports.postReset = (req, res, next) => {
-    req.assert('password', 'Password must be at least 4 characters long.').len(4);
-    req.assert('confirm', 'Passwords must match.').equals(req.body.password);
-
-    const errors = req.validationErrors();
-
-    if (errors) {
-        req.flash('errors', errors);
-        return res.redirect('back');
-    }
-
-    const resetPassword = () =>
-        User
-        .findOne({ passwordResetToken: req.params.token })
-        .where('passwordResetExpires').gt(Date.now())
-        .then((user) => {
-            if (!user) {
-                req.flash('errors', { msg: 'Password reset token is invalid or has expired.' });
-                return res.redirect('back');
-            }
-            user.password = req.body.password;
-            user.passwordResetToken = undefined;
-            user.passwordResetExpires = undefined;
-            return user.save().then(() => new Promise((resolve, reject) => {
-                req.logIn(user, (err) => {
-                    if (err) { return reject(err); }
-                    resolve(user);
-                });
-            }));
-        });
-
-    const sendResetPasswordEmail = (user) => {
-        if (!user) { return; }
-        const transporter = nodemailer.createTransport({
-            service: 'SendPulse',
-            auth: {
-                user: process.env.SENDPULSE_USER,
-                pass: process.env.SENDPULSE_PASSWORD
-            }
-        });
-        const mailOptions = {
-            to: user.email,
-            from: 'admin@eatsnap.love',
-            subject: 'Your eatsnap.love password has been changed',
-            text: `Hello,\n\nThis is a confirmation that the password for your account ${user.email} has just been changed.\n`
-        };
-        return transporter.sendMail(mailOptions)
-            .then(() => {
-                req.flash('success', { msg: 'Success! Your password has been changed.' });
-            });
-    };
-
-    resetPassword()
-        .then(sendResetPasswordEmail)
-        .then(() => { if (!res.finished) res.redirect('/'); })
-        .catch(err => next(err));
-};
-
-/**
  * GET /forgot
  * Forgot Password page.
  */
@@ -451,134 +366,26 @@ exports.getForgot = (req, res) => {
 };
 
 /**
- * POST /forgot
- * Create a random token, then the send user an email with a reset link.
- */
-exports.postForgot = (req, res, next) => {
-    req.assert('email', 'Please enter a valid email address.').isEmail();
-    req.sanitize('email').normalizeEmail({ remove_dots: false });
-
-    const errors = req.validationErrors();
-
-    if (errors) {
-        req.flash('errors', errors);
-        return res.redirect('/forgot');
-    }
-
-    const createRandomToken = crypto
-        .randomBytesAsync(16)
-        .then(buf => buf.toString('hex'));
-
-    const setRandomToken = token =>
-        User
-        .findOne({ email: req.body.email })
-        .then((user) => {
-            if (!user) {
-                req.flash('errors', { msg: 'Account with that email address does not exist.' });
-            } else {
-                user.passwordResetToken = token;
-                user.passwordResetExpires = Date.now() + 3600000; // 1 hour
-                user = user.save();
-            }
-            return user;
-        });
-
-    const sendForgotPasswordEmail = (user) => {
-        if (!user) { return; }
-        const token = user.passwordResetToken;
-        const transporter = nodemailer.createTransport({
-            service: 'Mailgun',
-            auth: {
-                user: process.env.MAILGUN_USER,
-                pass: process.env.MAILGUN_PASSWORD
-            }
-        });
-        const mailOptions = {
-            to: user.email,
-            from: 'do-not-reply@eatsnap.love',
-            subject: 'Reset your password on eatsnap.love',
-            text: `You are receiving this email because you (or someone else) have requested the reset of the password for your account.\n\n
-        Please click on the following link, or paste this into your browser to complete the process:\n\n
-        http://${req.headers.host}/reset/${token}\n\n
-        If you did not request this, please ignore this email and your password will remain unchanged.\n`
-        };
-        return transporter.sendMail(mailOptions)
-            .then(() => {
-                req.flash('info', { msg: `An e-mail has been sent to ${user.email} with further instructions.` });
-            });
-    };
-
-    createRandomToken
-        .then(setRandomToken)
-        .then(sendForgotPasswordEmail)
-        .then(() => res.redirect('/forgot'))
-        .catch(next);
-};
-
-/**
- * GET /forgot
- * Forgot Password page.
- */
-exports.mailAllActiveUsers = () => {
-    console.log('$%^$%$#%$#$%%&^%&^%^&%&^$^%$%$^% MAILING ALL USERS NOW!!!!!!!!!!!!!!!');
-    User.find().where('active').equals(true).exec(
-        function(err, users) {
-
-            // handle error
-            if (err) {
-                console.log('failed: ' + err);
-            } else {
-                // E-mail all active users
-                for (var i = users.length - 1; i >= 0; i--) {
-                    //e-mail all non-Admins
-                    if (!users[i].isAdmin) {
-                        sendReminderEmail(users[i]);
-                    }
-                }
-            }
-        });
-};
-
-/**
  * Turn off all old accounts. Groundhog admin accounts
  */
 exports.stillActive = () => {
     User.find().where('active').equals(true).exec(
         function(err, users) {
-
             // handle error
-            if (err) {
-                console.log('failed: ' + err);
-            } else {
+            if (err) { console.log(err); } else {
                 // E-mail all active users
-                for (var i = users.length - 1; i >= 0; i--) {
-                    console.log("Looking at user " + users[i].email);
+                for (const user of users) {
                     var time_diff = Date.now() - users[i].createdAt;
                     var two_days = 172800000;
-
-                    console.log("Time period is  " + time_diff);
-                    console.log("Two days is  " + two_days);
                     if (time_diff >= two_days) {
-                        if (users[i].isAdmin) {
-                            users[i].createdAt = Date.now();
-                            users[i].save((err) => {
-                                if (err) { return next(err); }
-                                console.log("Switch over to new day");
-                            });
-                        }
-
-                        //normal user, turn off
-                        else {
-                            users[i].active = false;
-                            console.log("turning off user " + users[i].email);
-                            sendFinalEmail(users[i]);
-                            users[i].save((err) => {
+                        if (!user.isAdmin) {
+                            user.active = false;
+                            user.save((err) => {
                                 if (err) { return next(err); }
                                 console.log("Success in turning off");
                             });
                         }
                     }
-
                 }
             }
         });
@@ -588,43 +395,30 @@ exports.stillActive = () => {
  * Basic information on Users that Finished the study
  */
 exports.userTestResults = (req, res) => {
-    //only admin can do this
+    //only admin can do this   
     if (!req.user.isAdmin) {
         res.redirect('/');
-    }
-    //we are admin
-    else {
-        User.find().where('active').equals(false).exec(
-            function(err, users) {
-
-                // handle error
-                if (err) {
-                    console.log('failed: ' + err);
-                } else {
-                    // E-mail all active users
-                    for (var i = users.length - 1; i >= 0; i--) {
-                        console.log("@@@@@@@@@@Looking at user " + users[i].email);
-                        var time_diff = Date.now() - users[i].createdAt;
-                        var two_days = 172800000;
-                        var one_day = 86400000;
-
-                        //check if completed or not yet
-                        if (!users[i].completed) {
-                            //Logged in at least twice a day, and posted at least 2 times
-                            if (users[i].study_days[0] >= 2 && users[i].study_days[1] >= 2 && users[i].numPosts >= 2) {
-                                users[i].completed = true;
-                                users[i].save((err) => {
-                                    if (err) { return next(err); }
-                                    console.log("I'm Finished!!!!");
-                                });
+    } else {
+        User.find()
+            // .where('active').equals(false)
+            .exec(
+                function(err, users) {
+                    if (err) { console.log(err); } else {
+                        // E-mail all active users
+                        for (const user of users) {
+                            //check if completed or not yet
+                            if (!user.completed) {
+                                //Logged in at least twice a day, and posted at least 2 times
+                                if (user.study_days[0] >= 1 && user.study_days[1] >= 1 && user.numPosts >= 2) {
+                                    user.completed = true;
+                                    user.save((err) => {
+                                        if (err) { return next(err); }
+                                    });
+                                }
                             }
-                        } //if User.completed
-
-                    } //for loop for all users!
-
-                    res.render('completed', { users: users });
-
-                } ///else no error
-            }); //User.Find()
+                        }
+                        res.render('completed', { users: users });
+                    }
+                });
     }
 };

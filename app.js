@@ -23,6 +23,7 @@ const fs = require('fs');
 const util = require('util');
 fs.readFileAsync = util.promisify(fs.readFile);
 const multer = require('multer');
+var schedule = require('node-schedule');
 
 var userpost_options = multer.diskStorage({
     destination: path.join(__dirname, 'uploads/user_post'),
@@ -79,6 +80,33 @@ mongoose.connection.on('error', (err) => {
     console.error(err);
     //console.log('%s MongoDB connection error. Please make sure MongoDB is running.', chalk.red('✗'));
     process.exit();
+});
+
+/****
+ **CRON JOBS
+ **Check if users are still active every 8 hours (at 4:30am, 12:30pm, and 20:30pm)
+ */
+var rule1 = new schedule.RecurrenceRule();
+rule1.hour = 4;
+rule1.minute = 30;
+var j = schedule.scheduleJob(rule1, function() {
+    userController.stillActive();
+});
+
+var rule2 = new schedule.RecurrenceRule();
+rule2.hour = 12;
+rule2.minute = 30;
+
+var j2 = schedule.scheduleJob(rule2, function() {
+    userController.stillActive();
+});
+
+var rule3 = new schedule.RecurrenceRule();
+rule3.hour = 20;
+rule3.minute = 30;
+
+var j3 = schedule.scheduleJob(rule3, function() {
+    userController.stillActive();
 });
 
 /**
@@ -195,9 +223,6 @@ app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
 app.get('/forgot', userController.getForgot);
-app.post('/forgot', userController.postForgot);
-app.get('/reset/:token', userController.getReset);
-app.post('/reset/:token', userController.postReset);
 app.get('/signup', userController.getSignup);
 app.post('/signup', userController.postSignup);
 

@@ -1,20 +1,17 @@
 extends ui_layout
 
 block content
-
   .sixteen.wide.column 
-    br
     table.ui.celled.padded.table
       thead
         tr
           th.single.line E-mail
-          th ID
+          th MTurkID
           th Start Date
           th Group
           th Completed?
-          th Day 1
-          th Day 2
-          th Day 3
+          th Day 1: # of times viewed feed
+          th Day 2: # of times viewed feed
           th Number of Logins
           th Posts
           th Replies
@@ -31,6 +28,3 @@ block content
             td=u.log.length 
             td=u.numPosts + 1
             td=u.numComments + 1
-    br
-    br
-    br
