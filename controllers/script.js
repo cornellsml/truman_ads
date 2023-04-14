@@ -352,12 +352,11 @@ exports.postUpdateFeedAction = (req, res, next) => {
         if (feedIndex == -1) {
             var cat = {
                 post: req.body.postID,
-                // TODO: postClass: use for ads vs. regular posts
+                postClass: req.body.postClass,
             };
             // add new post into correct location
             feedIndex = user.feedAction.push(cat) - 1;
         }
-
         //create a new Comment
         if (req.body.new_comment) {
             user.numComments = user.numComments + 1;
@@ -437,6 +436,7 @@ exports.postUpdateFeedAction = (req, res, next) => {
                 let flag = req.body.flag;
                 if (!user.feedAction[feedIndex].flagTime) {
                     user.feedAction[feedIndex].flagTime = [flag];
+                    user.feedAction[feedIndex].flagged = true;
                 } else {
                     console.log("Should never be here.");
                     user.feedAction[feedIndex].flagTime.push(flag);
@@ -480,6 +480,7 @@ exports.postUpdateFeedAction = (req, res, next) => {
                     user.feedAction[feedIndex].readTime.push(view);
                 }
                 user.feedAction[feedIndex].rereadTimes++;
+                user.feedAction[feedIndex].mostRecentTime = Date.now();
             } else {
                 console.log('Something in feedAction went crazy. You should never see this.');
             }

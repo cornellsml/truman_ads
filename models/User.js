@@ -88,24 +88,28 @@ const userSchema = new mongoose.Schema({
         page: String //URL
     })],
 
-    postStats: [new Schema({
-        postID: Number,
-        citevisits: Number,
-        generalpagevisit: Number,
-        DayOneVists: Number,
-        DayTwoVists: Number,
-        GeneralLikeNumber: Number,
-        GeneralPostLikes: Number,
-        GeneralCommentLikes: Number,
-        GeneralFlagNumber: Number,
-        GeneralPostNumber: Number,
-        GeneralCommentNumber: Number
-    })],
+    postStats: {
+        SiteVisits: Number, //Total number of times the user has logged into the website
+        Day1_visit: Number, //Number of times the user has logged into the website on Day 1
+        Day2_visit: Number, //Number of times the user has logged into the website oon Day 2
+        GeneraTimeSpent: Number,
+        Day1_timespent: Number,
+        Day2_timespent: Number,
+        GeneralPostLikes: Number, //# of normal posts liked
+        GeneralAdPostLikes: Number, //# of ad posts liked
+        GeneralCommentLikes: Number, //# of likes on comments on normal posts 
+        GeneralAdCommentLikes: Number, //# of likes on comments on ad posts
+        GeneralPostComments: Number, //# of comments left on normal posts
+        GeneralAdPostComments: Number, //# of comments left on ad posts
+        GeneralHideAds: Number, //# of ads hidden
+        GeneralFlagAds: Number //# of ads flagged
+    },
 
     feedAction: [new Schema({
         post: { type: Schema.ObjectId, ref: 'Script' },
-        postClass: String, //indicate if the post action is done on is Ad/Normal. TODO
-        rereadTimes: { type: Number, default: 0 }, //number of times post has been viewed by user. TODO
+        postClass: String, //indicate if the post action is done on "Ad" or "Normal" post.
+        mostRecentTime: Date, //Absolute Time, the most recent Date the post was viewed
+        rereadTimes: { type: Number, default: 0 }, //number of times post has been viewed by user.
 
         liked: { type: Boolean, default: false }, //has the user liked it?
         flagged: { type: Boolean, default: false }, // has the user flagged it?
@@ -128,7 +132,7 @@ const userSchema = new mongoose.Schema({
             body: String, //Body of comment
             absTime: Date, //Exact time comment was made
             relativeTime: Number, //in milliseconds, relative time comment was made to when the user created their account
-            likes: { type: Number, default: 0 }, //
+            likes: { type: Number, default: 0 }, //number of likes comments has
         }, { _id: true, versionKey: false })]
     }, { _id: true, versionKey: false })],
 
@@ -193,39 +197,55 @@ userSchema.methods.logPage = function logPage(time, page) {
     this.pageLog.push(log);
 };
 
-userSchema.methods.logPostStats = function logPage(postID) {
-    let log = {};
-    log.postID = postID;
-    log.citevisits = this.log.length;
-    log.generalpagevisit = this.pageLog.length;
+userSchema.methods.logPostStats = function logPage() {
+    var one_day = 86400000; // number of milliseconds in a day
 
-    if (this.study_days.length > 0) {
-        log.DayOneVists = this.study_days[0];
-        log.DayTwoVists = this.study_days[1];
-        //log.DayThreeVists = this.study_days[2];
-    }
+    const counts = this.feedAction.reduce(function(newCount, feedAction) {
+        const postType = feedAction.postClass == "Ad" ? 1 : 0;
+        const numLikes = feedAction.comments.filter(comment => comment.liked && !comment.new_comment).length;
+        const numNewComments = feedAction.comments.filter(comment => comment.new_comment).length;
 
-    log.GeneralLikeNumber = this.numPostLikes + this.numCommentLikes;
-    log.GeneralPostLikes = this.numPostLikes;
-    log.GeneralCommentLikes = this.numCommentLikes;
-    log.GeneralFlagNumber = 0;
+        newCount[postType][0] += numLikes;
+        newCount[postType][1] += numNewComments;
+        return newCount;
+    }, [
+        [0, 0], //Normal Post [likes, newComments]
+        [0, 0] //Ad Post[likes, newComments]
+    ]);
 
-    for (var k = this.feedAction.length - 1; k >= 0; k--) {
-        if (this.feedAction[k].post != null) {
-            if (this.feedAction[k].liked) {
-                //log.GeneralLikeNumber++;
-            }
-            //total number of flags
-            if (this.feedAction[k].flagTime[0]) {
-                log.GeneralFlagNumber++;
-            }
-        }
-    }
+    console.log(new Date(Math.max(...this.feedAction
+        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
+        .map(feedAction => feedAction.mostRecentTime.getTime()))));
+    const maxDateFromFeedActions = Math.max(...this.feedAction
+        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
+        .map(feedAction => feedAction.mostRecentTime.getTime()));
+    const maxDateFromPageLog = Math.max(...this.feedAction
+        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
+        .map(feedAction => feedAction.mostRecentTime.getTime()));
 
-    log.GeneralPostNumber = this.numPosts + 1;
-    log.GeneralCommentNumber = this.numComments + 1;
+    // const maxDateFromFeedActions = new Date(Math.max(...this.feedAction.map(feedAction => feedAction.mostRecentTime)));
+    // const maxDateFromPageLog = new Date(Math.max(...this.log.map(feedAction => feedAction.time)));
 
-    this.postStats.push(log);
+    // const mostRecentTime = maxDateFromFeedActions.getTime() > maxDateFromPageLog.getTime() ? maxDateFromFeedActions : maxDateFromPageLog;
+
+
+    let log = {
+        SiteVisits: this.log.length, //Total number of times the user has logged into the website
+        Day1_visit: this.log.filter(log => log.time - this.createdAt <= one_day).length, //Number of times the user has logged into the website on Day 1
+        Day2_visit: this.log.filter(log => (log.time - this.createdAt > one_day) && (log.time - this.createdAt <= one_day * 2)).length, //Number of times the user has logged into the website oon Day 2
+        // GeneraTimeSpent: Number,
+        // Day1_timespent: Number,
+        // Day2_timespent: Number,
+        GeneralPostLikes: this.feedAction.filter(feedAction => feedAction.postClass == "Normal" && feedAction.liked).length, //# of normal posts liked
+        GeneralAdPostLikes: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.liked).length, //# of ad posts liked
+        GeneralCommentLikes: counts[0][0], //# of likes on (comments on normal posts 
+        GeneralAdCommentLikes: counts[1][0], //# of likes on comments on ad posts
+        GeneralPostComments: counts[0][1], //# of comments left on normal posts
+        GeneralAdPostComments: counts[1][1], //# of comments left on ad posts
+        GeneralHideAds: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.hidden).length, //# of ads hidden
+        GeneralFlagAds: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.flagged).length //# of ads flagged
+    };
+    this.postStats = log;
 };
 
 /**

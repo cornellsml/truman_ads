@@ -86,17 +86,19 @@ $(window).on("load", function() {
 
         //Element's top edge has passed top of the screen (disappearing); happens only when Scrolling Down
         onTopPassed: function(element) {
+            var endTime = Date.now();
+            var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
+            var totalViewTime = endTime - startTime; //TOTAL TIME HERE
+
+            var parent = $(this).parents(".ui.fluid.card");
+            var postID = parent.attr("postID");
+            var postClass = parent.hasClass("adPost") ? "Ad" : "Normal";
             // If user viewed it for less than 24 hours, but more than 1.5 seconds (just in case)
             if (totalViewTime < 86400000 && totalViewTime > 1500 && startTime > 0) {
-                var endTime = Date.now();
-                var startTime = parseInt($(this).siblings(".content").children(".myTimer").text());
-                var totalViewTime = endTime - startTime; //TOTAL TIME HERE
-
-                var parent = $(this).parents(".ui.fluid.card");
-                var postID = parent.attr("postID");
                 $.post("/feed", {
                     postID: postID,
                     viewed: totalViewTime,
+                    postClass: postClass,
                     _csrf: $('meta[name="csrf-token"]').attr('content')
                 });
             }
@@ -121,11 +123,13 @@ $(window).on("load", function() {
 
                 var parent = $(this).parents(".ui.fluid.card");
                 var postID = parent.attr("postID");
+                var postClass = parent.hasClass("adPost") ? "Ad" : "Normal";
                 // If user viewed it for less than 24 hours, but more than 1.5 seconds (just in case)
                 if (totalViewTime < 86400000 && totalViewTime > 1500 && startTime > 0) {
                     $.post("/feed", {
                         postID: postID,
                         viewed: totalViewTime,
+                        postClass: postClass,
                         _csrf: $('meta[name="csrf-token"]').attr('content')
                     })
                 }

@@ -130,7 +130,7 @@ app.use(session({
         path: '/',
         httpOnly: true,
         secure: false,
-        maxAge: 7200000
+        maxAge: 7200000 //2 hours
     },
     secret: process.env.SESSION_SECRET,
     store: new MongoStore({

@@ -2,6 +2,7 @@ function likePost(e) {
     const target = $(e.target);
     const label = target.next("a.ui.basic.red.left.pointing.label.count");
     const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
 
     if (target.hasClass("red")) { //Unlike Post
         target.removeClass("red");
@@ -18,6 +19,7 @@ function likePost(e) {
             $.post("/feed", {
                 postID: postID,
                 unlike: unlike,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     } else { //Like Post
@@ -35,6 +37,7 @@ function likePost(e) {
             $.post("/feed", {
                 postID: postID,
                 like: like,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     }
@@ -44,11 +47,13 @@ function flagPost(e) {
     const target = $(e.target);
     const post = target.closest(".ui.fluid.card.dim");
     const postID = post.attr("postID");
+    const postClass = post.hasClass("adPost") ? "Ad" : "Normal";
     const flag = Date.now();
 
     $.post("/feed", {
         postID: postID,
         flag: flag,
+        postClass: postClass,
         _csrf: $('meta[name="csrf-token"]').attr('content')
     });
     post.find(".ui.dimmer.flag").dimmer({ closable: false }).dimmer('show');
@@ -62,6 +67,7 @@ function likeComment(e) {
     const label = comment.find("span.num");
 
     const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
     const commentID = comment.attr("commentID");
     const isUserComment = comment.find("a.author").attr('href') === '/me';
 
@@ -86,6 +92,7 @@ function likeComment(e) {
                 commentID: commentID,
                 unlike: unlike,
                 isUserComment: isUserComment,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
         }
@@ -110,6 +117,7 @@ function likeComment(e) {
                 commentID: commentID,
                 like: like,
                 isUserComment: isUserComment,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     }
@@ -119,6 +127,7 @@ function flagComment(e) {
     const target = $(e.target);
     const comment = target.parents(".comment");
     const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
     const commentID = comment.attr("commentID");
     comment.replaceWith(`
         <div class="comment" commentID="${commentID}" style="background-color:black;color:white">
@@ -135,6 +144,7 @@ function flagComment(e) {
             postID: postID,
             commentID: commentID,
             flag: flag,
+            postClass: postClass,
             _csrf: $('meta[name="csrf-token"]').attr('content')
         });
 }
@@ -144,6 +154,7 @@ function addComment(e) {
     const text = target.siblings("input.newcomment").val().trim();
     const card = target.parents(".ui.fluid.card");
     let comments = card.find(".ui.comments");
+    const postClass = target.parents(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
     //no comments area - add it
     if (!comments.length) {
         const buttons = card.find(".ui.bottom.attached.icon.buttons")
@@ -191,6 +202,7 @@ function addComment(e) {
                 postID: postID,
                 new_comment: date,
                 comment_text: text,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             }).then(function(json) {
                 numComments = json.numComments;
@@ -220,7 +232,6 @@ function followUser(e) {
         $.post("/user", {
             unfollowed: username,
             _csrf: $('meta[name="csrf-token"]').attr('content')
-
         })
     }
 }
@@ -239,6 +250,7 @@ function hideAd(e) {
     $.post("/feed", {
         postID: postID,
         hide: hide,
+        postClass: "Ad",
         _csrf: $('meta[name="csrf-token"]').attr('content')
     });
 }

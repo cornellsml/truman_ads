@@ -139,7 +139,7 @@ exports.postSignup = (req, res, next) => {
     var varResult = ['var1', 'var2', 'var3'][Math.floor(Math.random() * versions)]
 
     //TODO: assigning the correct survey link according to the study group
-    var surveyLink = "https://cornell.qualtrics.com/jfe/form/SV_8CdA8rLS8pjZIoJ"; //TODO
+    var surveyLink = "https://cornell.qualtrics.com/jfe/form/SV_8CdA8rLS8pjZIoJ";
 
     const user = new User({
         email: req.body.email,
@@ -373,16 +373,16 @@ exports.stillActive = () => {
         function(err, users) {
             // handle error
             if (err) { console.log(err); } else {
-                // E-mail all active users
                 for (const user of users) {
-                    var time_diff = Date.now() - users[i].createdAt;
+                    var time_diff = Date.now() - user.createdAt;
                     var two_days = 172800000;
                     if (time_diff >= two_days) {
                         if (!user.isAdmin) {
-                            user.active = false;
+                            // user.active = false;
+                            user.logPostStats();
                             user.save((err) => {
                                 if (err) { return next(err); }
-                                console.log("Success in turning off");
+                                console.log("Success in turning off.");
                             });
                         }
                     }
@@ -408,13 +408,14 @@ exports.userTestResults = (req, res) => {
                         for (const user of users) {
                             //check if completed or not yet
                             if (!user.completed) {
+                                user.logPostStats();
                                 //Logged in at least twice a day, and posted at least 2 times
-                                if (user.study_days[0] >= 1 && user.study_days[1] >= 1 && user.numPosts >= 2) {
-                                    user.completed = true;
-                                    user.save((err) => {
-                                        if (err) { return next(err); }
-                                    });
-                                }
+                                // if (user.study_days[0] >= 1 && user.study_days[1] >= 1 && user.numPosts >= 2) {
+                                // user.completed = true;
+                                user.save((err) => {
+                                    if (err) { return next(err); }
+                                });
+                                // }
                             }
                         }
                         res.render('completed', { users: users });

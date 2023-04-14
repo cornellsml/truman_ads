@@ -180,8 +180,6 @@ exports.getNotifications = async(req, res) => {
                                                 } else {
                                                     if (notification.notificationType == 'like') {
                                                         final_notify[notifyIndex].numLikes += 1;
-                                                        let postIndex = _.findIndex(user.posts, function(o) { return o.postID == userPostID; });
-                                                        user.posts[postIndex].likes = final_notify[notifyIndex].numLikes;
                                                     }
                                                     //if generic-joe, append. else, shift to the front of the line.
                                                     if (notification.notificationType == "read" && notification.actor.username == "generic-joe") {
@@ -195,6 +193,10 @@ exports.getNotifications = async(req, res) => {
                                                     if ((userPost.absTime.getTime() + notification.time) > lastNotifyVisit) {
                                                         final_notify[notifyIndex].unreadNotification = true;
                                                     }
+                                                }
+                                                if (notification.notificationType == 'like') {
+                                                    let postIndex = _.findIndex(user.posts, function(o) { return o.postID == userPostID; });
+                                                    user.posts[postIndex].likes = final_notify[notifyIndex].numLikes;
                                                 }
                                             }
                                         }
@@ -235,15 +237,6 @@ exports.getNotifications = async(req, res) => {
                                             } else {
                                                 if (notification.notificationType == 'like') {
                                                     final_notify[notifyIndex].numLikes += 1;
-                                                    if (postType == "user") {
-                                                        let postIndex = _.findIndex(user.posts, function(o) { return o.postID == userPostID; });
-                                                        let commentIndex = _.findIndex(user.posts[postIndex].comments, function(o) { return o.commentID == userReplyID && o.new_comment == true });
-                                                        user.posts[postIndex].comments[commentIndex].likes = final_notify[notifyIndex].numLikes;
-                                                    } else {
-                                                        let postIndex = _.findIndex(user.feedAction, function(o) { return o.post.equals(userPostID); });
-                                                        let commentIndex = _.findIndex(user.feedAction[postIndex].comments, function(o) { return o.new_comment_id == userReplyID && o.new_comment == true });
-                                                        user.feedAction[postIndex].comments[commentIndex].likes = final_notify[notifyIndex].numLikes;
-                                                    }
                                                 }
                                                 //if generic-joe, append. else, shift to the front of the line.
                                                 if (notification.notificationType == "read" && notification.actor.username == "generic-joe") {
@@ -256,6 +249,18 @@ exports.getNotifications = async(req, res) => {
                                                 }
                                                 if (time + notification.time > lastNotifyVisit) {
                                                     final_notify[notifyIndex].unreadNotification = true;
+                                                }
+                                            }
+                                            if (notification.notificationType == 'like') {
+                                                console.log(final_notify[notifyIndex].numLikes)
+                                                if (postType == "user") {
+                                                    let postIndex = _.findIndex(user.posts, function(o) { return o.postID == userPostID; });
+                                                    let commentIndex = _.findIndex(user.posts[postIndex].comments, function(o) { return o.commentID == userReplyID && o.new_comment == true });
+                                                    user.posts[postIndex].comments[commentIndex].likes = final_notify[notifyIndex].numLikes;
+                                                } else {
+                                                    let postIndex = _.findIndex(user.feedAction, function(o) { return o.post.equals(userPostID); });
+                                                    let commentIndex = _.findIndex(user.feedAction[postIndex].comments, function(o) { return o.new_comment_id == userReplyID && o.new_comment == true });
+                                                    user.feedAction[postIndex].comments[commentIndex].likes = final_notify[notifyIndex].numLikes;
                                                 }
                                             }
                                         }
