@@ -219,7 +219,7 @@ exports.getScript = (req, res, next) => {
                             }
 
                             //shuffle the feed
-                            // finalfeed = shuffle(finalfeed);
+                            finalfeed = shuffle(finalfeed);
 
                             //the most recent User posts are at the top of timeline
                             finalfeed = new_user_posts.concat(finalfeed);
