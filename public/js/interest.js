@@ -1,8 +1,12 @@
+let pickOrder = [];
+
 function canContinue() {
-    const chosePicture = $('.image.green').length > 0;
+    const chosePicture = $('.image.green').length == 2;
     if (chosePicture) {
         $(".ui.big.labeled.icon.button").addClass("green");
         $(".ui.big.labeled.icon.button")[0].scrollIntoView({ behavior: "smooth" });
+    } else {
+        $(".ui.big.labeled.icon.button").removeClass("green");
     }
 }
 
@@ -10,12 +14,29 @@ $(window).on("load", async function() {
     $('.ui.big.labeled.icon.button').removeClass('loading disabled');
     // Click a photo
     $('.image').on('click', function() {
-        // clear any photos selected 
-        $('.image').removeClass("green");
-        $(".image i.icon.green.check").addClass("hidden");
+        mostRecentPick = $(this).attr('id');
+        // Unselecting
+        if ($(this).hasClass("green")) {
+            console.log("hasGreen")
+            $(this).removeClass("green");
+            $(this).find(`i.icon.green.check`).addClass("hidden");
+            const index = pickOrder.indexOf(mostRecentPick);
+            if (index > -1) { // only splice array when item is found
+                pickOrder.splice(index, 1); // 2nd parameter means remove one item only
+            }
+        } else { // Selecting
+            pickOrder.push(mostRecentPick);
 
-        $(this).closest('.image').addClass("green");
-        $(this).find('i.icon').removeClass("hidden");
+            if ($('.image.green').length >= 2) {
+                var firstElement = pickOrder.shift();
+                // clear any photos selected 
+                $(`.image#${firstElement}`).removeClass("green");
+                $(`.image#${firstElement} i.icon.green.check`).addClass("hidden");
+            }
+
+            $(this).closest('.image').addClass("green");
+            $(this).find('i.icon').removeClass("hidden");
+        }
 
         canContinue();
 
@@ -25,13 +46,12 @@ $(window).on("load", async function() {
     })
 
     $(".ui.big.labeled.icon.button").on('click', function() {
-        const chosePicture = $('.image.green').length > 0;
-
+        const chosePicture = $('.image.green').length == 2;
         if (chosePicture) {
-            const foodStyle = $('.image.green')[0].id;
+            const foodStyles = pickOrder;
             $(this).addClass('loading disabled');
             $.post('/account/interest', {
-                    interest: foodStyle,
+                    interests: foodStyles,
                     _csrf: $('meta[name="csrf-token"]').attr('content')
                 })
                 .done(function(json) {

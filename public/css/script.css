@@ -1,0 +1,43 @@
+/*CSS for Posts*/
+
+.ui[class*="bottom attached"].buttons .button:first-child {
+    border-radius: 0 !important;
+}
+
+.ui[class*="bottom attached"].buttons .ui.label {
+    border-radius: 0 !important;
+}
+
+.ui.comments .comment .text {
+    margin: 0.25em 0;
+}
+
+.ui.comments .comment .text {
+    margin: 0.25em 0;
+}
+
+.ui.fluid.card>.content>a>span {
+    margin-left: 5px;
+}
+
+.ui.comments .comment:first-child {
+    padding-top: 0.5em !important;
+}
+
+
+/*CSS for Ads*/
+
+.ui.fluid.card.dim.adPost {
+    margin-bottom: 2em;
+    background-color: #F5F5F5;
+}
+
+.suggestedHeader {
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.suggestedHeader i.close.icon {
+    float: right;
+    cursor: pointer
+}

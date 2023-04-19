@@ -1,12 +1,13 @@
 function likePost(e) {
-    let target = $(e.target);
-    var label = target.next("a.ui.basic.red.left.pointing.label.count");
-    var postID = target.closest(".ui.fluid.card").attr("postID");
+    const target = $(e.target);
+    const label = target.next("a.ui.basic.red.left.pointing.label.count");
+    const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
 
     if (target.hasClass("red")) { //Unlike Post
         target.removeClass("red");
         label.html(function(i, val) { return val * 1 - 1 });
-        var unlike = Date.now();
+        const unlike = Date.now();
 
         if (target.closest(".ui.fluid.card").attr("type") == 'userPost')
             $.post("/userPost_feed", {
@@ -18,12 +19,13 @@ function likePost(e) {
             $.post("/feed", {
                 postID: postID,
                 unlike: unlike,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     } else { //Like Post
         target.addClass("red");
         label.html(function(i, val) { return val * 1 + 1 });
-        var like = Date.now();
+        const like = Date.now();
 
         if (target.closest(".ui.fluid.card").attr("type") == 'userPost')
             $.post("/userPost_feed", {
@@ -35,20 +37,23 @@ function likePost(e) {
             $.post("/feed", {
                 postID: postID,
                 like: like,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     }
 }
 
 function flagPost(e) {
-    let target = $(e.target);
-    var post = target.closest(".ui.fluid.card.dim");
-    var postID = post.attr("postID");
-    var flag = Date.now();
+    const target = $(e.target);
+    const post = target.closest(".ui.fluid.card.dim");
+    const postID = post.attr("postID");
+    const postClass = post.hasClass("adPost") ? "Ad" : "Normal";
+    const flag = Date.now();
 
     $.post("/feed", {
         postID: postID,
         flag: flag,
+        postClass: postClass,
         _csrf: $('meta[name="csrf-token"]').attr('content')
     });
     post.find(".ui.dimmer.flag").dimmer({ closable: false }).dimmer('show');
@@ -57,20 +62,21 @@ function flagPost(e) {
 }
 
 function likeComment(e) {
-    let target = $(e.target);
-    var comment = target.parents(".comment");
-    var label = comment.find("span.num");
+    const target = $(e.target);
+    const comment = target.parents(".comment");
+    const label = comment.find("span.num");
 
-    var postID = target.closest(".ui.fluid.card").attr("postID");
-    var commentID = comment.attr("commentID");
-    var isUserComment = comment.find("a.author").attr('href') === '/me';
+    const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
+    const commentID = comment.attr("commentID");
+    const isUserComment = comment.find("a.author").attr('href') === '/me';
 
     if (target.hasClass("red")) { //Unlike comment
         target.removeClass("red");
         comment.find("i.heart.icon").removeClass("red");
         target.html('Like');
         label.html(function(i, val) { return val * 1 - 1 });
-        var unlike = Date.now();
+        const unlike = Date.now();
 
         if (target.closest(".ui.fluid.card").attr("type") == 'userPost') {
             $.post("/userPost_feed", {
@@ -86,6 +92,7 @@ function likeComment(e) {
                 commentID: commentID,
                 unlike: unlike,
                 isUserComment: isUserComment,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
         }
@@ -94,7 +101,7 @@ function likeComment(e) {
         comment.find("i.heart.icon").addClass("red");
         target.html('Unlike');
         label.html(function(i, val) { return val * 1 + 1 });
-        var like = Date.now();
+        const like = Date.now();
 
         if (target.closest(".ui.fluid.card").attr("type") == 'userPost')
             $.post("/userPost_feed", {
@@ -110,23 +117,25 @@ function likeComment(e) {
                 commentID: commentID,
                 like: like,
                 isUserComment: isUserComment,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
             });
     }
 }
 
 function flagComment(e) {
-    let target = $(e.target);
-    var comment = target.parents(".comment");
-    var postID = target.closest(".ui.fluid.card").attr("postID");
-    var commentID = comment.attr("commentID");
+    const target = $(e.target);
+    const comment = target.parents(".comment");
+    const postID = target.closest(".ui.fluid.card").attr("postID");
+    const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
+    const commentID = comment.attr("commentID");
     comment.replaceWith(`
         <div class="comment" commentID="${commentID}" style="background-color:black;color:white">
             <h5 class="ui inverted header" style="padding-bottom: 0.5em; padding-left: 0.5em;">
                 The admins will review this comment further. We are sorry you had this experience.
             </h5>
         </div>`);
-    var flag = Date.now();
+    const flag = Date.now();
 
     if (target.closest(".ui.fluid.card").attr("type") == 'userPost')
         console.log("Should never be here.")
@@ -135,30 +144,32 @@ function flagComment(e) {
             postID: postID,
             commentID: commentID,
             flag: flag,
+            postClass: postClass,
             _csrf: $('meta[name="csrf-token"]').attr('content')
         });
 }
 
 function addComment(e) {
-    let target = $(e.target);
-    var text = target.siblings("input.newcomment").val().trim();
-    var card = target.parents(".ui.fluid.card");
-    var comments = card.find(".ui.comments");
+    const target = $(e.target);
+    const text = target.siblings("input.newcomment").val().trim();
+    const card = target.parents(".ui.fluid.card");
+    let comments = card.find(".ui.comments");
+    const postClass = target.parents(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
     //no comments area - add it
     if (!comments.length) {
-        var buttons = card.find(".ui.bottom.attached.icon.buttons")
+        const buttons = card.find(".ui.bottom.attached.icon.buttons")
         buttons.after('<div class="content"><div class="ui comments"></div>');
-        var comments = card.find(".ui.comments")
+        comments = card.find(".ui.comments")
     }
     if (text.trim() !== '') {
-        var date = Date.now();
-        var ava = target.siblings('.ui.label').find('img.ui.avatar.image');
-        var ava_img = ava.attr("src");
-        var ava_name = ava.attr("name");
-        var postID = card.attr("postID");
-        var commentID = user.numComments + 1;
+        const date = Date.now();
+        const ava = target.siblings('.ui.label').find('img.ui.avatar.image');
+        const ava_img = ava.attr("src");
+        const ava_name = ava.attr("name");
+        const postID = card.attr("postID");
+        const commentID = numComments + 1;
 
-        var mess = `
+        const mess = `
         <div class="comment" commentID=${commentID}>
             <a class="avatar"><img src="${ava_img}"></a>
             <div class="content"> 
@@ -170,7 +181,7 @@ function addComment(e) {
                 </div> 
                 <div class="text">${text}</div>
                 <div class="actions"> 
-                    <a class="like" onClick="likeComment(event)">Like</a> 
+                    <a class="like comment" onClick="likeComment(event)">Like</a> 
                 </div> 
             </div>
         </div>`;
@@ -183,15 +194,65 @@ function addComment(e) {
                 new_comment: date,
                 comment_text: text,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
+            }).then(function(json) {
+                numComments = json.numComments;
             });
         else
             $.post("/feed", {
                 postID: postID,
                 new_comment: date,
                 comment_text: text,
+                postClass: postClass,
                 _csrf: $('meta[name="csrf-token"]').attr('content')
-            });
+            }).then(function(json) {
+                numComments = json.numComments;
+            });;
     }
+}
+
+function followUser(e) {
+    const target = $(e.target);
+    const username = target.attr('actor_un');
+    if (target.text().trim() == "Follow") { //Follow Actor
+        $(`.ui.basic.primary.follow.button[actor_un=${username}]`).each(function(i, element) {
+            const button = $(element);
+            button.text("Following");
+            button.prepend("<i class='check icon'></i>");
+        })
+        $.post("/user", {
+            followed: username,
+            _csrf: $('meta[name="csrf-token"]').attr('content')
+        })
+    } else { //Unfollow Actor
+        $(`.ui.basic.primary.follow.button[actor_un=${username}]`).each(function(i, element) {
+            const button = $(element);
+            button.text("Follow");
+            button.find('i').remove();
+        })
+        $.post("/user", {
+            unfollowed: username,
+            _csrf: $('meta[name="csrf-token"]').attr('content')
+        })
+    }
+}
+
+function hideAd(e) {
+    const target = $(e.target);
+    target.hide();
+
+    const ad = target.parent().next('.ui.fluid.card.dim');
+    const postID = ad.attr("postID");
+    const hide = Date.now();
+
+    ad.hide();
+    ad.replaceWith("<div class='ui fluid card dim' style='background-color:#F5F5F5; display:flex; align-items: center; justify-items: center; padding: 1em 0; margin-bottom: 2em;'> <i class='icon check circle outline green big'></i><p style='margin-top:5px'> This ad has been hidden. </p></div>").fadeIn("slow");
+
+    $.post("/feed", {
+        postID: postID,
+        hide: hide,
+        postClass: "Ad",
+        _csrf: $('meta[name="csrf-token"]').attr('content')
+    });
 }
 
 $(window).on('load', () => {
@@ -224,4 +285,10 @@ $(window).on('load', () => {
 
     //Flag comment
     $('a.flag.comment').on('click', flagComment);
+
+    //Follow button
+    $('.ui.basic.primary.follow.button').on('click', followUser);
+
+    //Hide Ad
+    $('h3.suggestedHeader i.close.icon').on('click', hideAd);
 });
