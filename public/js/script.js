@@ -30,7 +30,6 @@ $(window).on("load", function() {
         onSuccess: function(event, fields) {
             $("#postform")[0].submit();
         }
-
     });
 
     $('#postform').submit(function(e) {

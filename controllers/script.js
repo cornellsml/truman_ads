@@ -54,11 +54,11 @@ exports.getScript = (req, res, next) => {
             //day one
             if (time_diff <= one_day) {
                 current_day = 0;
-                user.study_days.set(0, user.study_days[0] + 1);
+                user.study_days.set(current_day, user.study_days[current_day] + 1);
             } //day two
             else if (time_diff <= (one_day * 2)) {
                 current_day = 1;
-                user.study_days.set(1, user.study_days[1] + 1);
+                user.study_days.set(current_day, user.study_days[current_day] + 1);
             } else {
                 console.log("Shouldn't be here.")
                 current_day = -1;
@@ -246,8 +246,13 @@ exports.getScript = (req, res, next) => {
                                 // console.log("----");
                                 count++;
                             }
+                            const randomIndexes_list = Array.from(randomIndexes).sort(function(a, b) {
+                                return a - b;
+                            });
+                            user.adPlacements[current_day].push(randomIndexes_list.slice(0, interest_posts.length));
+                            user.adPlacements.set(current_day, user.adPlacements[current_day]);
 
-                            for (const index of randomIndexes) {
+                            for (const index of randomIndexes_list) {
                                 if (index < finalfeed.length && interest_posts.length > 0) {
                                     finalfeed.splice(index, 1, interest_posts[0]);
                                     interest_posts.splice(0, 1);

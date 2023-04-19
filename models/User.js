@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -51,6 +51,16 @@ const userSchema = new mongoose.Schema({
         default: [0, 0]
     }, //TODO: Update. It inaccurately +1, whenever creates a new post.
 
+    adPlacements: { //Ad Placements per feed view.
+        type: [
+            []
+        ],
+        default: [
+            [],
+            []
+        ]
+    },
+
     // User Made posts
     posts: [new Schema({
         type: String, //Value: user_post
@@ -87,6 +97,11 @@ const userSchema = new mongoose.Schema({
         time: Date,
         page: String //URL
     })],
+
+    pageTimes: { //how much time the user spent on the website per day
+        type: [Number],
+        default: [0, 0]
+    },
 
     postStats: {
         SiteVisits: Number, //Total number of times the user has logged into the website
@@ -197,6 +212,9 @@ userSchema.methods.logPage = function logPage(time, page) {
     this.pageLog.push(log);
 };
 
+/** Calculate stats: Basic (not comprehensive) 
+ * Also displayed in /completed for admin accounts.
+ */
 userSchema.methods.logPostStats = function logPage() {
     var one_day = 86400000; // number of milliseconds in a day
 
@@ -209,39 +227,32 @@ userSchema.methods.logPostStats = function logPage() {
         newCount[postType][1] += numNewComments;
         return newCount;
     }, [
-        [0, 0], //Normal Post [likes, newComments]
-        [0, 0] //Ad Post[likes, newComments]
+        [0, 0], //Normal Post [actorLikes, newComments]
+        [0, 0] //Ad Post[actorLikes, newComments]
     ]);
 
-    console.log(new Date(Math.max(...this.feedAction
-        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
-        .map(feedAction => feedAction.mostRecentTime.getTime()))));
-    const maxDateFromFeedActions = Math.max(...this.feedAction
-        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
-        .map(feedAction => feedAction.mostRecentTime.getTime()));
-    const maxDateFromPageLog = Math.max(...this.feedAction
-        .filter(feedAction => this.createdAt - feedAction.mostRecentTime <= one_day)
-        .map(feedAction => feedAction.mostRecentTime.getTime()));
+    const Day1_posts = this.posts.filter(post => post.relativeTime <= one_day).length;
+    const Day2_posts = this.posts.filter(post => post.relativeTime > one_day && post.relativeTime <= one_day * 2).length;
 
-    // const maxDateFromFeedActions = new Date(Math.max(...this.feedAction.map(feedAction => feedAction.mostRecentTime)));
-    // const maxDateFromPageLog = new Date(Math.max(...this.log.map(feedAction => feedAction.time)));
-
-    // const mostRecentTime = maxDateFromFeedActions.getTime() > maxDateFromPageLog.getTime() ? maxDateFromFeedActions : maxDateFromPageLog;
-
+    const CompletedDay1 = Day1_posts >= 1 && this.pageTimes[0] > 168000;
+    const CompletedDat2 = Day2_posts >= 1 && this.pageTimes[1] > 168000;
 
     let log = {
+        CompletedDay1: CompletedDay1,
+        CompletedDay2: CompletedDay2,
         SiteVisits: this.log.length, //Total number of times the user has logged into the website
         Day1_visit: this.log.filter(log => log.time - this.createdAt <= one_day).length, //Number of times the user has logged into the website on Day 1
         Day2_visit: this.log.filter(log => (log.time - this.createdAt > one_day) && (log.time - this.createdAt <= one_day * 2)).length, //Number of times the user has logged into the website oon Day 2
-        // GeneraTimeSpent: Number,
-        // Day1_timespent: Number,
-        // Day2_timespent: Number,
+        GeneraTimeSpent: this.pageTimes[0] + this.pageTimes[1], //Approximate time spent on website (sum of viewTimes on all posts)
+        GeneralPostNumber: this.numPosts + 1,
+        Day1_posts: Day1_posts,
+        Day2_posts: Day2_posts,
         GeneralPostLikes: this.feedAction.filter(feedAction => feedAction.postClass == "Normal" && feedAction.liked).length, //# of normal posts liked
         GeneralAdPostLikes: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.liked).length, //# of ad posts liked
-        GeneralCommentLikes: counts[0][0], //# of likes on (comments on normal posts 
-        GeneralAdCommentLikes: counts[1][0], //# of likes on comments on ad posts
-        GeneralPostComments: counts[0][1], //# of comments left on normal posts
-        GeneralAdPostComments: counts[1][1], //# of comments left on ad posts
+        GeneralCommentLikes: counts[0][0], //# of likes on actor comments on normal posts 
+        GeneralAdCommentLikes: counts[1][0], //# of likes on actor comments on ad posts
+        GeneralPostComments: counts[0][1], //# of user comments left on normal posts
+        GeneralAdPostComments: counts[1][1], //# of user comments left on ad posts
         GeneralHideAds: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.hidden).length, //# of ads hidden
         GeneralFlagAds: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.flagged).length //# of ads flagged
     };

@@ -252,7 +252,6 @@ exports.getNotifications = async(req, res) => {
                                                 }
                                             }
                                             if (notification.notificationType == 'like') {
-                                                console.log(final_notify[notifyIndex].numLikes)
                                                 if (postType == "user") {
                                                     let postIndex = _.findIndex(user.posts, function(o) { return o.postID == userPostID; });
                                                     let commentIndex = _.findIndex(user.posts[postIndex].comments, function(o) { return o.commentID == userReplyID && o.new_comment == true });

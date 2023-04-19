@@ -353,6 +353,30 @@ exports.postPageLog = (req, res, next) => {
 };
 
 /**
+ * POST /pageTimes
+ * Post a pageTime
+ */
+exports.postPageTime = (req, res, next) => {
+    User.findById(req.user.id, (err, user) => {
+        if (err) { return next(err); }
+        //What day in the study are we in?
+        const one_day = 86400000; // number of milliseconds in a day
+        const time_diff = Date.now() - user.createdAt;
+        const current_day = time_diff <= one_day ? 0 : 1;
+
+        user.pageTimes.set(current_day, user.pageTimes[current_day] + parseInt(req.body.time));
+
+        user.save((err) => {
+            if (err) {
+                return next(err);
+            }
+            res.set('Content-Type', 'application/json; charset=UTF-8');
+            res.send({ result: "success" });
+        });
+    });
+};
+
+/**
  * GET /forgot
  * Forgot Password page.
  */
@@ -369,30 +393,32 @@ exports.getForgot = (req, res) => {
  * Turn off all old accounts. Groundhog admin accounts
  */
 exports.stillActive = () => {
-    User.find().where('active').equals(true).exec(
-        function(err, users) {
-            // handle error
-            if (err) { console.log(err); } else {
-                for (const user of users) {
-                    var time_diff = Date.now() - user.createdAt;
-                    var two_days = 172800000;
-                    if (time_diff >= two_days) {
-                        if (!user.isAdmin) {
-                            // user.active = false;
-                            user.logPostStats();
-                            user.save((err) => {
-                                if (err) { return next(err); }
-                                console.log("Success in turning off.");
-                            });
+    User.find()
+        .where('active').equals(true)
+        .exec(
+            function(err, users) {
+                // handle error
+                if (err) { console.log(err); } else {
+                    for (const user of users) {
+                        var time_diff = Date.now() - user.createdAt;
+                        var two_days = 172800000;
+                        if (time_diff >= two_days) {
+                            if (!user.isAdmin) {
+                                user.active = false;
+                                user.logPostStats();
+                                user.save((err) => {
+                                    if (err) { return next(err); }
+                                    console.log("Success in turning off.");
+                                });
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
 };
 
 /**
- * Basic information on Users that Finished the study
+ * Basic information on Users currrently in the study
  */
 exports.userTestResults = (req, res) => {
     //only admin can do this   
@@ -400,22 +426,23 @@ exports.userTestResults = (req, res) => {
         res.redirect('/');
     } else {
         User.find()
-            // .where('active').equals(false)
+            .where('isAdmin').equals(false)
             .exec(
                 function(err, users) {
                     if (err) { console.log(err); } else {
                         // E-mail all active users
                         for (const user of users) {
-                            //check if completed or not yet
-                            if (!user.completed) {
-                                user.logPostStats();
-                                //Logged in at least twice a day, and posted at least 2 times
-                                // if (user.study_days[0] >= 1 && user.study_days[1] >= 1 && user.numPosts >= 2) {
-                                // user.completed = true;
-                                user.save((err) => {
-                                    if (err) { return next(err); }
-                                });
-                                // }
+                            var time_diff = Date.now() - user.createdAt;
+                            var two_days = 172800000;
+                            if (time_diff >= two_days) {
+                                if (!user.isAdmin) {
+                                    user.active = false;
+                                    user.logPostStats();
+                                    user.save((err) => {
+                                        if (err) { return next(err); }
+                                        console.log("Success in turning off.");
+                                    });
+                                }
                             }
                         }
                         res.render('completed', { users: users });
