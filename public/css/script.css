@@ -24,6 +24,10 @@
     padding-top: 0.5em !important;
 }
 
+.ui.label>img {
+    width: 2.1666em!important;
+}
+
 
 /*CSS for Ads*/
 
