@@ -7,7 +7,7 @@ block content
         tr
           th.single.line E-mail
           th Prolific ID
-          th Start Date
+          th Start Date (ET)
           th # Ads/10
           th Completed?
           th Approximate total time on site
@@ -18,7 +18,7 @@ block content
           tr
             td=u.email
             td.single.line=u.mturkID
-            td=u.createdAt.toString().replace("GMT-0400 (Eastern Daylight Time)","ET")
+            td=u.createdAt.toLocaleString("en-US", {timeZone: "America/New_York"})
             td=u.group=="var1" ? 5 :u.group=="var2" ? 4 : 2
             td=u.completed
             td=Math.round((u.pageTimes[0] + u.pageTimes[1])/1000/60)+" minutes"

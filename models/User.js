@@ -257,6 +257,7 @@ userSchema.methods.logPostStats = function logPage() {
         GeneralFlagAds: this.feedAction.filter(feedAction => feedAction.postClass == "Ad" && feedAction.flagged).length //# of ads flagged
     };
     this.postStats = log;
+    this.completed = CompletedDay1 && CompletedDay2;
 };
 
 /**
