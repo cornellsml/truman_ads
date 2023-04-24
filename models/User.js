@@ -235,7 +235,7 @@ userSchema.methods.logPostStats = function logPage() {
     const Day2_posts = this.posts.filter(post => post.relativeTime > one_day && post.relativeTime <= one_day * 2).length;
 
     const CompletedDay1 = Day1_posts >= 1 && this.pageTimes[0] > 168000;
-    const CompletedDat2 = Day2_posts >= 1 && this.pageTimes[1] > 168000;
+    const CompletedDay2 = Day2_posts >= 1 && this.pageTimes[1] > 168000;
 
     let log = {
         CompletedDay1: CompletedDay1,

@@ -101,7 +101,9 @@ exports.postLogin = (req, res, next) => {
  */
 exports.logout = (req, res) => {
     req.logout();
-    res.redirect('/login');
+    req.session.regenerate(function() {
+        res.redirect('/login');
+    })
 };
 
 /**
