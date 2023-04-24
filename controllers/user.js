@@ -59,12 +59,14 @@ exports.postLogin = (req, res, next) => {
     }
 
     passport.authenticate('local', (err, user, info) => {
+        const two_days = 172800000; //Milliseconds in 2 days
+        const time_diff = Date.now() - user.createdAt; //Time difference between now and account creation.
         if (err) { return next(err); }
         if (!user) {
             req.flash('errors', info);
             return res.redirect('/login');
         }
-        if (!(user.active)) {
+        if (!(user.active) || ((time_diff >= two_days) && !user.isAdmin)) {
             var post_url = user.endSurveyLink;
             req.flash('final', { msg: post_url });
             return res.redirect('/login');

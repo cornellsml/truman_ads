@@ -59,9 +59,10 @@ exports.getScript = (req, res, next) => {
             else if (time_diff <= (one_day * 2)) {
                 current_day = 1;
                 user.study_days.set(current_day, user.study_days[current_day] + 1);
-            } else {
+            } else { // Shouldn't be here. Other days. 
                 console.log("Shouldn't be here.")
-                current_day = -1;
+                current_day = 1;
+                user.study_days.set(current_day, user.study_days[current_day] + 1);
             }
 
             //Get the newsfeed
