@@ -29,6 +29,8 @@ $(window).on("load", function() {
         },
         onSuccess: function(event, fields) {
             $("#postform")[0].submit();
+            $('.actions .ui.green.button').addClass('disabled');
+            $('.actions .ui.green.button').val('Posting...');
         }
     });
 

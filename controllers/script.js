@@ -116,8 +116,8 @@ exports.getScript = (req, res, next) => {
                                     user_posts[0].comments.sort(function(a, b) {
                                         return a.relativeTime - b.relativeTime;
                                     });
-                                    if ((Date.now() - user_posts[0].absTime) < 300000) {
-                                        //if post was made less than 5 minutes ago, it should be spliced into the TOP
+                                    if ((Date.now() - user_posts[0].absTime) < 600000) {
+                                        //if post was made less than 10 minutes ago, it should be spliced into the TOP
                                         new_user_posts.push(user_posts[0]);
                                         user_posts.splice(0, 1);
                                     } else {
@@ -220,10 +220,7 @@ exports.getScript = (req, res, next) => {
                             }
 
                             //shuffle the feed
-                            finalfeed = shuffle(finalfeed.slice(0, 41));
-
-                            //the most recent User posts are at the top of timeline
-                            finalfeed = new_user_posts.concat(finalfeed);
+                            finalfeed = shuffle(finalfeed.slice(0, 40));
 
                             interest_posts = shuffle(interest_posts); //Ads from day 1 or day 2 of the study, shuffled.
                             const numAds = {
@@ -264,6 +261,9 @@ exports.getScript = (req, res, next) => {
                             //     finalfeed.splice(spliceIndex * (count + 1) + count, 0, interestPostObject);
                             //     count++;
                             // }
+
+                            //the most recent User posts are at the top of timeline
+                            finalfeed = new_user_posts.concat(finalfeed);
 
                             console.log("Script Size is now: " + finalfeed.length);
                             user.save((err) => {

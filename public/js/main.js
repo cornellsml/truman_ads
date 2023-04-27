@@ -2,20 +2,40 @@
 $('#content').hide();
 $('#loading').show();
 
+//Called when inactive and when page unloads
+//Function calculates duration of activity and adds to sum in the database.
 function addPageTime() {
-    const pageLoadTime = window.sessionStorage.getItem('pageLoadTime');
-    const timeDuration = Date.now() - pageLoadTime;
-    $.post("/pageTimes", {
-        time: timeDuration,
-        _csrf: $('meta[name="csrf-token"]').attr('content')
-    }).catch(function(err) {
-        console.log(err);
-    });
+    const startTime = window.sessionStorage.getItem('startDate');
+    if (startTime !== 'null' && window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        const timeDuration = Date.now() - startTime;
+        $.post("/pageTimes", {
+            time: timeDuration,
+            _csrf: $('meta[name="csrf-token"]').attr('content')
+        }).then(function() {
+            window.sessionStorage.setItem('startDate', 'null');
+        }).catch(function(err) {
+            console.log(err);
+        });
+
+    }
 }
 
 $(window).on("load", function() {
-    //Set time page is loaded.
-    window.sessionStorage.setItem('pageLoadTime', Date.now());
+    var timeout = null; //Timer used for tracking user activity. Initialized to null. 
+    window.sessionStorage.setItem('startDate', 'null');
+
+    //Definition of an active user: mouse movement, clicks etc. If they haven't done it in 1 minute, we stop the timer and record the time.
+    $('#pagegrid').on('mousemove click mouseup mousedown keydown keypress keyup submit change mouseenter scroll resize dblclick mousewheel', function() {
+        //If there hasn't been a "start time" for activity, set it.We use session storage so we can track activity when pages changes too.
+        if (window.sessionStorage.getItem('startDate') == 'null') {
+            window.sessionStorage.setItem('startDate', Date.now());
+        }
+        clearTimeout(timeout);
+        timeout = setTimeout(function() {
+            console.log('Mouse idle for 60 sec');
+            addPageTime();
+        }, 60000);
+    });
 
     //add humanized time to all posts
     $('.right.floated.time.meta, .date').each(function() {
@@ -166,7 +186,5 @@ $(window).on("load", function() {
 
 $(window).on("beforeunload", function() {
     // https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event
-    if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
-        addPageTime();
-    }
-})
+    addPageTime();
+});

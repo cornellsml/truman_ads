@@ -1,6 +1,6 @@
 function likePost(e) {
-    const target = $(e.target);
-    const label = target.next("a.ui.basic.red.left.pointing.label.count");
+    const target = $(e.target).closest('.ui.like.button');
+    const label = target.closest('.ui.like.button').next("a.ui.basic.red.left.pointing.label.count");
     const postID = target.closest(".ui.fluid.card").attr("postID");
     const postClass = target.closest(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
 
@@ -151,7 +151,7 @@ function flagComment(e) {
 
 function addComment(e) {
     const target = $(e.target);
-    const text = target.siblings("input.newcomment").val().trim();
+    const text = target.siblings(".ui.form").find("textarea.newcomment").val().trim();
     const card = target.parents(".ui.fluid.card");
     let comments = card.find(".ui.comments");
     const postClass = target.parents(".ui.fluid.card").hasClass("adPost") ? "Ad" : "Normal";
@@ -185,7 +185,7 @@ function addComment(e) {
                 </div> 
             </div>
         </div>`;
-        $(this).siblings("input.newcomment").val('');
+        $(this).siblings(".ui.form").find("textarea.newcomment").val('');
         comments.append(mess);
 
         if (card.attr("type") == 'userPost')
@@ -260,13 +260,16 @@ $(window).on('load', () => {
     // Focus new comment element if "Reply" button is clicked
     $('.reply.button').on('click', function() {
         let parent = $(this).closest(".ui.fluid.card");
-        parent.find("input.newcomment").focus();
+        parent.find("textarea.newcomment").focus();
     });
 
     // Press enter to submit a comment
-    $("input.newcomment").keyup(function(event) {
-        if (event.keyCode === 13) {
-            $(this).siblings("i.big.send.link.icon").click();
+    $("textarea.newcomment").keydown(function(event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            $(this).parents(".ui.form").siblings("i.big.send.link.icon").click();
+
         }
     });
 

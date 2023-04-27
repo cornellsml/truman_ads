@@ -45,3 +45,29 @@
     float: right;
     cursor: pointer
 }
+
+
+/*CSS for adding new comment*/
+
+.extra.content>.ui.fluid.left.labeled.right.icon.input>.ui.form {
+    width: 100%;
+}
+
+textarea.newcomment {
+    border-radius: 0 .28571429rem .28571429rem 0;
+}
+
+.extra.content>.ui.fluid.left.labeled.right.icon.input>.ui.label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5em;
+}
+
+.extra.content>.ui.fluid.left.labeled.right.icon.input>.ui.label>img {
+    margin: 0;
+}
+
+.extra.content>.ui.fluid.left.labeled.right.icon.input>i.big.send.link.icon {
+    margin-right: 4px;
+}
