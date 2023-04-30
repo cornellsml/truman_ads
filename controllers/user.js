@@ -68,7 +68,7 @@ exports.postLogin = (req, res, next) => {
         }
         if (!(user.active) || ((time_diff >= two_days) && !user.isAdmin)) {
             // var post_url = user.endSurveyLink;
-            req.flash('final');
+            req.flash('final', { msg: '' });
             return res.redirect('/login');
         }
         req.logIn(user, (err) => {
