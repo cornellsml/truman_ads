@@ -136,16 +136,24 @@ async function getDataExport() {
         //AvgTimePost, AvgTimeAdPost
         const nonAdPosts = user.feedAction.filter(post => post.postClass == "Normal");
         const AdPosts = user.feedAction.filter(post => post.postClass == "Ad");
+        let nonAdPostsCount = 0;
+        let AdPostsCount = 0;
 
         const sumTimeNonAdPosts = nonAdPosts.reduce(function(partialSum, post) {
-            return partialSum + post.readTime.reduce((partialRSum, a) => partialRSum + a, 0);
+            return partialSum + post.readTime.reduce(function(partialRSum, a) {
+                nonAdPostsCount++;
+                return partialRSum + a
+            }, 0);
         }, 0);
         const sumTimeAdPosts = AdPosts.reduce(function(partialSum, post) {
-            return partialSum + post.readTime.reduce((partialRSum, a) => partialRSum + a, 0);
+            return partialSum + post.readTime.reduce(function(partialRSum, a) {
+                AdPostsCount++;
+                return partialRSum + a
+            }, 0);
         }, 0);
 
-        record.AvgTimePost = (sumTimeNonAdPosts / nonAdPosts.length) / 1000;
-        record.AvgTimeAdPost = (sumTimeAdPosts / AdPosts.length) / 1000;
+        record.AvgTimePost = (sumTimeNonAdPosts / nonAdPostsCount) / 1000;
+        record.AvgTimeAdPost = (sumTimeAdPosts / AdPostsCount) / 1000;
 
         record.GeneralPostNumber = user.posts.length;
         record.Day1_posts = Day1_posts;
