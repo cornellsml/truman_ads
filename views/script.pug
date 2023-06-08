@@ -38,10 +38,6 @@ block content
         include ./partials/userPost
       else 
         //- This is an Actor post
-        -var isAd=(val.class!="normal")
-        if isAd
-          h3.suggestedHeader Suggested for you
-            i.close.icon
         include ./partials/actorPost
     .ui.fluid.card
       .content

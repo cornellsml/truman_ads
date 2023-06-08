@@ -240,12 +240,12 @@ function hideAd(e) {
     const target = $(e.target);
     target.hide();
 
-    const ad = target.parent().next('.ui.fluid.card.dim');
+    const ad = target.parents('.ui.fluid.card.dim');
     const postID = ad.attr("postID");
     const hide = Date.now();
 
     ad.hide();
-    ad.replaceWith("<div class='ui fluid card dim' style='background-color:#F5F5F5; display:flex; align-items: center; justify-items: center; padding: 1em 0; margin-bottom: 2em;'> <i class='icon check circle outline green big'></i><p style='margin-top:5px'> This ad has been hidden. </p></div>").fadeIn("slow");
+    ad.replaceWith("<div class='ui fluid card dim' style='background-color:#F1F1F1; display:flex; align-items: center; justify-items: center; padding: 1em 0; margin-bottom: 2em;'> <i class='icon check circle outline green big'></i><h3 style='margin-top:5px'> This ad has been hidden. </h3></div>").fadeIn("slow");
 
     $.post("/feed", {
         postID: postID,

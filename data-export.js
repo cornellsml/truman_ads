@@ -70,11 +70,14 @@ async function getDataExport() {
         { id: 'CompletedDay1', title: 'CompletedDay1' }, //If user has completed all the requirements above for Day 1
         { id: 'CompletedDay2', title: 'CompletedDay2' }, //If user has completed all the requirements above for Day 2
         { id: 'SiteVisits', title: 'SiteVisits' }, //Total number of times the user has logged into website
+        { id: 'VisitsLog', title: 'VisitsLog (Eastern Time)' }, //Time stamps of each visit
         { id: 'Day1_visit', title: 'Day1_visit' }, //# of times the user has logged into the website on Day 1
         { id: 'Day2_visit', title: 'Day2_visit' }, //# of times the user has logged into the website on Day 2
         { id: 'Generaltimespent', title: 'Generaltimespent (seconds)' }, //Amount of time spent on the website during Day 1 and Day 2
         { id: 'Day1_timespent', title: 'Day1_timespent (seconds)' }, //Amount of time spent on the website during Day 1
         { id: 'Day2_timespent', title: 'Day2_timespent (seconds)' }, //Amount of time spent on the website during Day 2
+        { id: 'NumPostSeen', title: 'NumPostSeen' }, //Number of non-ad posts seen 
+        { id: 'NumAdPostSeen', title: 'NumAdPostSeen' }, //Number of ad posts seen
         { id: 'AvgTimePost', title: 'AvgTimePost (seconds)' }, //Average time spent on normal (non-ad) posts
         { id: 'AvgTimeAdPost', title: 'AvgTimeAdPost (seconds)' }, //Average time spent on ad posts
         { id: 'GeneralPostNumber', title: 'GeneralPostNumber' }, //# of posts user has created
@@ -126,6 +129,7 @@ async function getDataExport() {
 
         //SiteVisits, Day1_visit, Day2_visit 
         record.SiteVisits = user.log.length;
+        record.VisitsLog = user.log.reduce(function(string, a) { return string + a.time.toLocaleString("en-US", { timeZone: "America/New_York" }) + "\n" }, "")
         record.Day1_visit = user.log.filter(log => log.time - user.createdAt <= one_day).length;
         record.Day2_visit = user.log.filter(log => (log.time - user.createdAt > one_day) && (log.time - user.createdAt <= one_day * 2)).length;
 
@@ -136,22 +140,26 @@ async function getDataExport() {
         //AvgTimePost, AvgTimeAdPost
         const nonAdPosts = user.feedAction.filter(post => post.postClass == "Normal");
         const AdPosts = user.feedAction.filter(post => post.postClass == "Ad");
-        let nonAdPostsCount = 0;
-        let AdPostsCount = 0;
+        // let nonAdPostsCount = 0;
+        // let AdPostsCount = 0;
+        let nonAdPostsCount = nonAdPosts.length;
+        let AdPostsCount = AdPosts.length;
 
         const sumTimeNonAdPosts = nonAdPosts.reduce(function(partialSum, post) {
             return partialSum + post.readTime.reduce(function(partialRSum, a) {
-                nonAdPostsCount++;
+                // nonAdPostsCount++;
                 return partialRSum + a
             }, 0);
         }, 0);
         const sumTimeAdPosts = AdPosts.reduce(function(partialSum, post) {
             return partialSum + post.readTime.reduce(function(partialRSum, a) {
-                AdPostsCount++;
+                // AdPostsCount++;
                 return partialRSum + a
             }, 0);
         }, 0);
 
+        record.NumPostSeen = nonAdPosts.length;
+        record.NumAdPostSeen = AdPosts.length;
         record.AvgTimePost = (sumTimeNonAdPosts / nonAdPostsCount) / 1000;
         record.AvgTimeAdPost = (sumTimeAdPosts / AdPostsCount) / 1000;
 

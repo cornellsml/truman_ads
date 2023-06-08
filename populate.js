@@ -408,7 +408,7 @@ function getLikes() {
     return notRandomNumbers[idx];
 }
 
-//Create a radom number (for likes) with a weighted distrubution
+//Create a random number (for likes) with a weighted distrubution
 //This is for comments
 function getLikesComment() {
     var notRandomNumbers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 2, 2, 3, 4];

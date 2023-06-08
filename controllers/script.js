@@ -231,7 +231,7 @@ exports.getScript = (req, res, next) => {
                             let count = 0;
                             const randomIndexes = new Set();
 
-                            while (count * 10 <= finalfeed.length) {
+                            while (count * 10 < finalfeed.length) {
                                 let tempCount = 0;
                                 while (tempCount < numAds) {
                                     let index = (Math.floor(Math.random() * 8 + 1)) + (count * 10);
