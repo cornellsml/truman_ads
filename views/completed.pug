@@ -10,7 +10,7 @@ block content
           th Start Date (ET)
           th Logins (ET)
           th # Ads/10
-          th Completed?
+          //- th Completed?
           th Approximate total time on site 
           th # of logins (Day 1)
           th # of logins (Day 2)
@@ -27,7 +27,7 @@ block content
                 each log in u.log 
                   li=log.time.toLocaleString("en-US", {timeZone: "America/New_York"})
             td=u.group=="var1" ? 5 :u.group=="var2" ? 4 : 2
-            td=u.completed
+            //- td=u.completed
             td=Math.round((u.pageTimes[0] + u.pageTimes[1])/1000/60)+" minutes"
             td=u.log.filter(log => log.time - u.createdAt <= 86400000).length
             td=u.log.filter(log => ((log.time - u.createdAt > 86400000) && (log.time - u.createdAt <= 86400000 * 2))).length
