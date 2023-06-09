@@ -10,9 +10,10 @@
           h3.ui.inverted.header
             span="The admins will review this post further. We are sorry you had this experience."
   if isAd
-    .content.Adheader
-      h3.suggestedHeader Suggested for you
-        i.close.icon
+    if !isProfile
+      .content.Adheader
+        h3.suggestedHeader Suggested for you
+          i.close.icon
     .content
       if !isProfile
         .right.floated.ui.basic.primary.follow.button(actor_un = val.actor.username) 
