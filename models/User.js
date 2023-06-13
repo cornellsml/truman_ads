@@ -107,7 +107,7 @@ const userSchema = new mongoose.Schema({
         SiteVisits: Number, //Total number of times the user has logged into the website
         Day1_visit: Number, //Number of times the user has logged into the website on Day 1
         Day2_visit: Number, //Number of times the user has logged into the website oon Day 2
-        GeneraTimeSpent: Number,
+        GeneralTimeSpent: Number,
         Day1_timespent: Number,
         Day2_timespent: Number,
         GeneralPostLikes: Number, //# of normal posts liked
@@ -243,7 +243,7 @@ userSchema.methods.logPostStats = function logPage() {
         SiteVisits: this.log.length, //Total number of times the user has logged into the website
         Day1_visit: this.log.filter(log => log.time - this.createdAt <= one_day).length, //Number of times the user has logged into the website on Day 1
         Day2_visit: this.log.filter(log => (log.time - this.createdAt > one_day) && (log.time - this.createdAt <= one_day * 2)).length, //Number of times the user has logged into the website oon Day 2
-        GeneraTimeSpent: this.pageTimes[0] + this.pageTimes[1], //Approximate time spent on website (sum of viewTimes on all posts)
+        GeneralTimeSpent: this.pageTimes[0] + this.pageTimes[1], //Approximate time spent on website (sum of viewTimes on all posts)
         GeneralPostNumber: this.numPosts + 1,
         Day1_posts: Day1_posts,
         Day2_posts: Day2_posts,
