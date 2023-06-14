@@ -139,7 +139,7 @@ exports.getNotifications = async(req, res) => {
                                     if (notification.userPost >= 0) {
                                         var userPostID = notification.userPost;
                                         console.log("user.numPosts = " + user.numPosts);
-                                        onsole.log(userPostID);
+                                        console.log(userPostID);
                                         console.log(user);
                                         console.log(user.posts);
                                         var userPost = user.posts.find(x => x.postID == userPostID);
