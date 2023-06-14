@@ -332,6 +332,8 @@ exports.newPost = (req, res) => {
 
                     user.save((err) => {
                         if (err) {
+                            console.log("Error in creating post")
+                            console.log(err);
                             return next(err);
                         }
                         res.redirect('/');

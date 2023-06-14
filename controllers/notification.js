@@ -138,12 +138,17 @@ exports.getNotifications = async(req, res) => {
                                     //Notification is about a userPost (read, like, comment)
                                     if (notification.userPost >= 0) {
                                         var userPostID = notification.userPost;
-                                        console.log("user.numPosts = " + user.numPosts);
-                                        console.log(userPostID);
-                                        console.log(user);
-                                        console.log(user.posts);
                                         var userPost = user.posts.find(x => x.postID == userPostID);
-                                        console.log(userPost);
+
+                                        if (userPost == undefined) {
+                                            console.log("UNDEFINED USERPOST")
+                                            console.log("user.numPosts = " + user.numPosts);
+                                            console.log(userPostID);
+                                            console.log(user);
+                                            console.log(user.posts);
+                                            // Temporary bug fix: 
+                                            continue;
+                                        }
 
                                         var time_diff = Date.now() - userPost.absTime; //Time since userPost was made
 

@@ -145,14 +145,14 @@ app.use(flash());
 
 //this allows us to not check CSRF when uploading an image. Its a weird issue that
 //multer and lusca no not play well together
-app.use((req, res, next) => {
-    if ((req.path === '/post/new') || (req.path === '/account/profile') || (req.path === '/account/signup_info_post')) {
-        console.log("Not checking CSRF. Out path now");
-        next();
-    } else {
-        lusca.csrf()(req, res, next);
-    }
-});
+// app.use((req, res, next) => {
+//     if ((req.path === '/post/new') || (req.path === '/account/profile') || (req.path === '/account/signup_info_post')) {
+//         console.log("Not checking CSRF. Out path now");
+//         next();
+//     } else {
+//         lusca.csrf()(req, res, next);
+//     }
+// });
 
 //app.use(lusca.xframe('SAMEORIGIN'));
 //allow-from https://example.com/
@@ -179,7 +179,7 @@ app.use((req, res, next) => {
     next();
 });
 
-var csrf = lusca({ csrf: true });
+// var csrf = lusca({ csrf: true });
 
 app.use('/public', express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 app.use('/semantic', express.static(path.join(__dirname, 'semantic'), { maxAge: 31557600000 }));
@@ -192,7 +192,7 @@ app.use('/profile_pictures', express.static(path.join(__dirname, 'profile_pictur
  */
 app.get('/', passportConfig.isAuthenticated, scriptController.getScript);
 
-app.post('/post/new', userpostupload.single('picinput'), csrf, scriptController.newPost);
+app.post('/post/new', userpostupload.single('picinput'), scriptController.newPost);
 app.post('/pageLog', passportConfig.isAuthenticated, userController.postPageLog);
 app.post('/pageTimes', passportConfig.isAuthenticated, userController.postPageTime);
 
@@ -229,13 +229,13 @@ app.post('/signup', userController.postSignup);
 
 app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/profile', passportConfig.isAuthenticated, useravatarupload.single('picinput'), csrf, userController.postUpdateProfile);
+app.post('/account/profile', passportConfig.isAuthenticated, useravatarupload.single('picinput'), userController.postUpdateProfile);
 app.get('/account/signup_info', passportConfig.isAuthenticated, function(req, res) {
     res.render('account/signup_info', {
         title: 'Add Information'
     });
 });
-app.post('/account/signup_info_post', passportConfig.isAuthenticated, useravatarupload.single('picinput'), csrf, userController.postSignupInfo);
+app.post('/account/signup_info_post', passportConfig.isAuthenticated, useravatarupload.single('picinput'), userController.postSignupInfo);
 app.get('/account/interest', passportConfig.isAuthenticated, async function(req, res) {
     const data = await fs.readFileAsync(`${__dirname}/public/json/foodStylesInfo.json`)
     const foodStyleData = JSON.parse(data.toString());

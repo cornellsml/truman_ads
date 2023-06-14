@@ -33,8 +33,4 @@ $(window).on("load", function() {
             $('.actions .ui.green.button').val('Posting...');
         }
     });
-
-    $('#postform').submit(function(e) {
-        e.preventDefault();
-    });
 });
