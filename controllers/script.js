@@ -287,7 +287,7 @@ exports.newPost = (req, res) => {
 
         //This is a new post
         if (req.file) {
-            user.numPosts = user.numPosts + 1; //begins at 0
+            user.numPosts = user.posts.length + 1; //begins at 0
             const currTime = Date.now();
 
             var post = {
