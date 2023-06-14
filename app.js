@@ -264,23 +264,44 @@ app.get('/test', passportConfig.isAuthenticated, function(req, res) {
 /**
  * Error Handler.
  */
-app.use(errorHandler());
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
 // error handler
 app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
+    // No routes handled the request and no system error, that means 404 issue.
+    // Forward to next middleware to handle it.
+    if (!err) return next();
+
+    console.error(err);
+
+    // set locals, only providing error stack and message in development
+    // Express app.get('env') returns 'development' if NODE_ENV is not defined
+    err.status = err.status || 500;
+    err.stack = req.app.get('env') === 'development' ? err.stack : '';
+    err.message = req.app.get('env') === 'development' ? err.message : " Oops! Something went wrong.";
+
     res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.locals.error = err;
 
     // render the error page
-    res.status(err.status || 500);
+    res.status(err.status);
+    res.render('error');
+});
+
+// catch 404. 404 should be considered as a default behavior, not a system error.
+// Necessary to include because in express, 404 responses are not the result of an error, so the error-handler middleware will not capture them. https://expressjs.com/en/starter/faq.html 
+app.use(function(req, res, next) {
+    var err = new Error('Page Not Found.');
+    err.status = 404;
+
+    console.log(err);
+
+    // set locals, only providing error stack in development
+    err.stack = req.app.get('env') === 'development' ? err.stack : '';
+
+    res.locals.message = err.message + " Oops! We can't seem to find the page you're looking for.";
+    res.locals.error = err;
+
+    // render the error page
+    res.status(err.status);
     res.render('error');
 });
 

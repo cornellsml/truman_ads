@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     endSurveyLink: String,
 
     numPosts: { type: Number, default: -1 }, //# of user posts
-    numComments: { type: Number, default: -1 }, //# of comments on posts (user and actor), it is used for indexing and commentID of uesr comments on posts (user and actor)
+    numComments: { type: Number, default: -1 }, //# of comments on posts (user and actor), it is used for indexing and commentID of user comments on posts (user and actor)
     numActorReplies: { type: Number, default: -1 }, //# of actor replies on user posts, it is used for indexing and commentID of actor comments on user posts
 
     numPostLikes: { type: Number, default: 0 }, //# of actor posts liked
