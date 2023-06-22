@@ -95,6 +95,8 @@ async function getDataExport() {
         { id: 'GeneralHideAds', title: 'GeneralHideAds' }, //# of ads hidden
         { id: 'Day1_removeads', title: 'Day1_removeads' }, //Ads hidden on Day 1
         { id: 'Day2_removeads', title: 'Day2_removeads' }, //Ads hidden on Day 2
+        { id: 'GeneralFollowProfile', title: 'GeneralFollowProfile' }, //# of actor (non-ad) profiles followed
+        { id: 'GeneralFollowAdProfile', title: 'GeneralFollowAdProfile' }, //# of ad profile followed
         { id: 'AdPlacements_Day1', title: 'AdPlacements_Day1' }, //Ad Placements on Day 1
         { id: 'AdPlacements_Day2', title: 'AdPlacements_Day2' } //Ad Placements on Day 2
     ];
@@ -210,6 +212,19 @@ async function getDataExport() {
         });
         record.GeneralVisitProfile = GeneralVisitProfile;
         record.GeneralAdVisitProfile = GeneralAdVisitProfile;
+
+        let GeneralFollowProfile = 0;
+        let GeneralFollowAdProfile = 0;
+        user.followed.forEach(function(page) {
+            if (adActors.includes(user)) {
+                GeneralFollowAdProfile++;
+            }
+            if (actors.includes(user)) {
+                GeneralFollowProfile++;
+            }
+        });
+        record.GeneralFollowProfile = GeneralFollowProfile;
+        record.GeneralFollowAdProfile = GeneralFollowAdProfile;
 
         record.GeneralHideAds = user.feedAction.filter(post => post.hidden && post.postClass == "Ad").length;
 
