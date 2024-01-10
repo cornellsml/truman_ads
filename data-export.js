@@ -76,6 +76,7 @@ async function getDataExport() {
         { id: 'Generaltimespent', title: 'Generaltimespent (seconds)' }, //Amount of time spent on the website during Day 1 and Day 2
         { id: 'Day1_timespent', title: 'Day1_timespent (seconds)' }, //Amount of time spent on the website during Day 1
         { id: 'Day2_timespent', title: 'Day2_timespent (seconds)' }, //Amount of time spent on the website during Day 2
+        { id: 'Generaltimespent_postbased', title: 'Generaltimespent (seconds; based on post view times)' },
         { id: 'NumPostSeen', title: 'NumPostSeen' }, //Number of non-ad posts seen 
         { id: 'NumAdPostSeen', title: 'NumAdPostSeen' }, //Number of ad posts seen
         { id: 'AvgTimePost', title: 'AvgTimePost (seconds)' }, //Average time spent on normal (non-ad) posts
@@ -160,6 +161,8 @@ async function getDataExport() {
             }, 0);
         }, 0);
 
+        record.TimeSpent_postbased = (sumTimeNonAdPosts + sumTimeAdPosts) / 1000;
+
         record.NumPostSeen = nonAdPosts.length;
         record.NumAdPostSeen = AdPosts.length;
         record.AvgTimePost = (sumTimeNonAdPosts / nonAdPostsCount) / 1000;
@@ -216,10 +219,10 @@ async function getDataExport() {
         let GeneralFollowProfile = 0;
         let GeneralFollowAdProfile = 0;
         user.followed.forEach(function(page) {
-            if (adActors.includes(user)) {
+            if (adActors.includes(page)) {
                 GeneralFollowAdProfile++;
             }
-            if (actors.includes(user)) {
+            if (actors.includes(page)) {
                 GeneralFollowProfile++;
             }
         });

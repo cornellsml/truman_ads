@@ -1,9 +1,0 @@
-Participant Email,Prolific ID,Foodstyle1,Foodstyle2,Condition,CompletedStudy,MinimumOneDayCompleted,CompletedDay1,CompletedDay2,SiteVisits,VisitsLog (Eastern Time),Day1_visit,Day2_visit,Generaltimespent (seconds),Day1_timespent (seconds),Day2_timespent (seconds),NumPostSeen,NumAdPostSeen,AvgTimePost (seconds),AvgTimeAdPost (seconds),GeneralPostNumber,Day1_posts,Day2_posts,GeneralLikeNumber,GeneralPostLikes,GeneralAdPostLikes,GeneralCommentLikes,GeneralAdCommentLikes,GeneralPostComments,GeneralAdPostComments,GeneralVisitProfile,GeneralAdVisitProfile,GeneralHideAds,Day1_removeads,Day2_removeads,AdPlacements_Day1,AdPlacements_Day2
-test@gmail.com,test,American,Asian,2,false,false,false,false,3,"6/7/2023, 9:49:45 PM
-6/7/2023, 10:02:35 PM
-6/7/2023, 10:21:19 PM
-",3,0,737.776,737.776,0,7,4,33.587428571428575,3.86175,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,"1,5,12,17,25,27,32,33
-4,8,14,16,23,28,31,37
-2,8,11,17,23,25,37,38
-2,3,15,18,21,26,32,35
-",

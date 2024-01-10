@@ -18,6 +18,9 @@ public/css/main.css
 #user_uploads
 uploads/user_post
 
+#data
+outputFiles
+
 # API keys and secrets
 .env
 
